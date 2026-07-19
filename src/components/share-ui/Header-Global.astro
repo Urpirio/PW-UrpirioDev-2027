@@ -1,0 +1,153 @@
+---
+import { Icon } from "astro-icon/components";
+
+const Header = [
+  {
+    titulo: "Inicio",
+    herf: "/",
+  },
+  {
+    titulo: "Proyectos",
+    herf: "/proyectos",
+  },
+  {
+    titulo: "Sobre mi",
+    herf: "/sobre-me",
+  },
+  {
+    titulo: "Blog",
+    herf: "/blog",
+  },
+];
+
+const path = Astro.url.pathname;
+const isActive = (herf: string) =>
+  herf === "/" ? path === "/" : path.startsWith(herf);
+---
+
+<header
+  class="fixed top-5 inset-x-0 z-50 flex flex-col items-center gap-3 justify-center px-4"
+>
+  <nav
+    id="floating-nav"
+    class="relative z-50 flex w-full items-center justify-between gap-3 rounded-full border border-white/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6))] px-3 py-2 backdrop-blur-[22px] backdrop-saturate-[1.9] shadow-[0_12px_40px_-8px_rgba(31,38,135,0.25)] sm:w-auto sm:gap-1 sm:px-2 dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(0,0,0,0.7),rgba(0,0,0,0.45))]"
+  >
+    <a
+      href="/"
+      class="relative z-10 pl-2 text-base font-black tracking-tight text-[#38b000] sm:hidden"
+    >
+      urpirio<span class="text-neutral-800 dark:text-neutral-100">.dev</span>
+    </a>
+
+    <button
+      id="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-links"
+      aria-label="Abrir menú"
+      class="relative z-10 flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 sm:hidden dark:text-neutral-100"
+    >
+      <Icon name="lucide:menu" id="menu-icon-open" class="h-5 w-5" />
+      <Icon name="lucide:x" id="menu-icon-close" class="hidden h-5 w-5" />
+    </button>
+
+    <div
+      id="nav-links"
+      class="absolute top-[calc(100%+0.75rem)] left-1/2 hidden w-80 -translate-x-1/2 flex-col gap-1 rounded-3xl border border-white/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78))]  backdrop-blur-[22px] backdrop-saturate-[1.9] shadow-[0_12px_40px_-8px_rgba(31,38,135,0.25)] sm:static sm:flex sm:w-auto sm:max-w-none sm:translate-x-0 sm:flex-row sm:items-center sm:border-0 sm:bg-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(0,0,0,0.88),rgba(0,0,0,0.68))]"
+    >
+      {
+        Header.map((e) => (
+          <a
+            href={e.herf}
+            aria-current={isActive(e.herf) ? "page" : undefined}
+            class:list={[
+              "nav-link relative z-10 rounded-full px-4 my-2 mx-2 py-2 text-sm font-medium whitespace-nowrap",
+              isActive(e.herf)
+                ? "bg-[#38b000] text-white shadow-sm"
+                : "text-neutral-800 hover:bg-white/30 dark:text-neutral-100 dark:hover:bg-white/10",
+            ]}
+          >
+            {e.titulo}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+</header>
+
+<script>
+  import { animate, scroll } from "motion";
+
+  const nav = document.querySelector<HTMLElement>("#floating-nav");
+
+  const menu_toggle = document.getElementById("menu-toggle");
+  const nav_links = document.getElementById("nav-links");
+  const nav_backdrop = document.getElementById("nav-backdrop");
+  const menu_icon_open = document.getElementById("menu-icon-open");
+  const menu_icon_close = document.getElementById("menu-icon-close");
+
+  if (nav) {
+    animate(
+      nav,
+      { opacity: [0, 1], y: [-24, 0], filter: ["blur(8px)", "blur(0px)"] },
+      { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    );
+
+    scroll(
+      animate(nav, {
+        boxShadow: [
+          "0 12px 40px -8px rgba(31,38,135,0.2)",
+          "0 20px 55px -8px rgba(31,38,135,0.4)",
+        ],
+      }),
+      { target: document.documentElement, offset: ["0px", "320px"] },
+    );
+
+    nav.querySelectorAll<HTMLElement>(".nav-link").forEach((link) => {
+      link.addEventListener("mouseenter", () =>
+        animate(link, { scale: 1.06 }, { duration: 0.25, ease: "easeOut" }),
+      );
+      link.addEventListener("mouseleave", () =>
+        animate(link, { scale: 1 }, { duration: 0.25, ease: "easeOut" }),
+      );
+    });
+  }
+
+  const openMenu = () => {
+    nav_links?.classList.remove("hidden");
+    nav_links?.classList.add("flex");
+    nav_backdrop?.classList.remove("hidden");
+    menu_icon_open?.classList.add("hidden");
+    menu_icon_close?.classList.remove("hidden");
+    menu_toggle?.setAttribute("aria-expanded", "true");
+  };
+
+  const closeMenu = () => {
+    nav_links?.classList.add("hidden");
+    nav_links?.classList.remove("flex");
+    nav_backdrop?.classList.add("hidden");
+    menu_icon_open?.classList.remove("hidden");
+    menu_icon_close?.classList.add("hidden");
+    menu_toggle?.setAttribute("aria-expanded", "false");
+  };
+
+  menu_toggle?.addEventListener("click", () => {
+    const isOpen = menu_toggle.getAttribute("aria-expanded") === "true";
+    isOpen ? closeMenu() : openMenu();
+  });
+
+  nav_links?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  nav_backdrop?.addEventListener("click", closeMenu);
+
+  document.addEventListener("click", (event) => {
+    if (!nav || nav.contains(event.target as Node)) return;
+    closeMenu();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMenu();
+  });
+</script>
