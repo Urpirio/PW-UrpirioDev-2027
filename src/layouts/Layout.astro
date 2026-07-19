@@ -1,0 +1,33 @@
+---
+import HeaderGlobal from "../components/share-ui/Header-Global.astro";
+import FooterGlobal from "../components/share-ui/Footer-Global.astro";
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Urpirio Dev</title>
+  </head>
+  <body>
+    <HeaderGlobal />
+    <main id="top" class="pt-24">
+      <slot />
+    </main>
+    <FooterGlobal />
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
