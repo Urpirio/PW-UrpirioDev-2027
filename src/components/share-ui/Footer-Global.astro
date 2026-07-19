@@ -1,0 +1,112 @@
+---
+import { Icon } from "astro-icon/components";
+
+const enlaces = [
+  { titulo: "Inicio", href: "/" },
+  { titulo: "Proyectos", href: "/proyectos" },
+  { titulo: "Sobre mí", href: "/sobre-me" },
+  { titulo: "Blog", href: "/blog" },
+];
+
+const redes = [
+  {
+    titulo: "LinkedIn",
+    href: "https://linkedin.com",
+    icon: "simple-icons:linkedin",
+  },
+  {
+    titulo: "GitHub",
+    href: "https://github.com/urpiriojunior",
+    icon: "simple-icons:github",
+  },
+  {
+    titulo: "Email",
+    href: "mailto:urpiriojunior@gmail.com",
+    icon: "lucide:mail",
+  },
+];
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-neutral-950 px-10 py-16 text-neutral-300">
+  <div class="mx-auto flex max-w-5xl flex-col gap-10 sm:flex-row sm:justify-between">
+    <div class="max-w-xs">
+      <p class="text-xl font-black text-white">
+        URPIRIO<span class="text-[#38b000]">DEV</span>
+      </p>
+      <div class="mt-3 h-px w-10 bg-[#38b000]"></div>
+      <p class="mt-4 text-sm text-neutral-400">
+        Construyo sitios y apps rápidas, limpias y a medida para clientes y
+        empresas.
+      </p>
+    </div>
+
+    <div>
+      <p class="text-sm font-semibold tracking-wide text-white uppercase">
+        Navegación
+      </p>
+      <div class="mt-3 h-px w-10 bg-[#38b000]"></div>
+      <ul class="mt-4 flex flex-col gap-2">
+        {
+          enlaces.map((enlace) => (
+            <li>
+              <a
+                href={enlace.href}
+                class="text-sm text-neutral-400 transition-colors hover:text-[#38b000]"
+              >
+                {enlace.titulo}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <p class="text-sm font-semibold tracking-wide text-white uppercase">
+        Contacto
+      </p>
+      <div class="mt-3 h-px w-10 bg-[#38b000]"></div>
+      <p class="mt-4 max-w-xs text-sm text-neutral-400">
+        ¿Tienes un proyecto en mente? Escríbeme directamente.
+      </p>
+      <a
+        href="mailto:urpiriojunior@gmail.com"
+        class="mt-2 inline-block text-sm text-neutral-200 transition-colors hover:text-[#38b000]"
+      >
+        urpiriojunior@gmail.com
+      </a>
+
+      <div class="mt-4 flex gap-3">
+        {
+          redes.map((red) => (
+            <a
+              href={red.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={red.titulo}
+              class="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-700 text-neutral-400 transition-colors hover:border-[#38b000] hover:text-[#38b000]"
+            >
+              <Icon name={red.icon} class="h-4 w-4" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-12 flex max-w-5xl flex-col items-center justify-between gap-4 border-t border-neutral-800 pt-6 sm:flex-row">
+    <p class="text-xs text-neutral-500">
+      © {year} Urpiriodev. Todos los derechos reservados.
+    </p>
+
+    <a
+      href="#top"
+      class="flex items-center gap-1 text-xs text-neutral-400 transition-colors hover:text-[#38b000]"
+    >
+      Volver arriba
+      <Icon name="lucide:arrow-up" class="h-3.5 w-3.5" />
+    </a>
+  </div>
+</footer>
