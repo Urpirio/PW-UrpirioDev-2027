@@ -1,0 +1,165 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import Urpiriodev from "../../../assets/foto_sin_fondo.png";
+import Kakashi from "../../../assets/kakashi_armadura_sin_fondo.png";
+
+const title = "URPIRIODEV".split("");
+
+const redes = [
+  {
+    titulo: "GitHub",
+    href: "https://github.com/urpiriojunior",
+    icon: "simple-icons:github",
+    top: "12%",
+    left: "8%",
+  },
+  {
+    titulo: "LinkedIn",
+    href: "https://linkedin.com",
+    icon: "simple-icons:linkedin",
+    top: "68%",
+    left: "12%",
+  },
+  {
+    titulo: "Email",
+    href: "mailto:urpiriojunior@gmail.com",
+    icon: "lucide:mail",
+    top: "20%",
+    left: "88%",
+  },
+  {
+    titulo: "Instagram",
+    href: "https://instagram.com",
+    icon: "simple-icons:instagram",
+    top: "72%",
+    left: "84%",
+  },
+];
+---
+
+<section class="p-4 pt-6 sm:p-10 sm:pt-10">
+  <div
+    class="relative flex h-80 items-center justify-center overflow-hidden rounded-4xl sm:h-112 md:h-144 lg:h-150"
+  >
+    <div class="pointer-events-none absolute inset-0 hidden sm:block">
+      {
+        redes.map((red) => (
+          <a
+            href={red.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={red.titulo}
+            class="floating-icon pointer-events-auto absolute flex h-9 w-9 items-center justify-center rounded-full border border-[#38b000]/30 bg-white/70 text-[#38b000] opacity-0 backdrop-blur-sm transition-colors hover:border-[#38b000] hover:bg-[#38b000]/10 md:h-12 md:w-12"
+            style={{ top: red.top, left: red.left }}
+          >
+            <Icon name={red.icon} class="h-4 w-4 md:h-5 md:w-5" />
+          </a>
+        ))
+      }
+    </div>
+    <h1
+      class="text-[8.5vw] font-black whitespace-nowrap text-[#38b000] leading-none select-none sm:text-[110px] md:text-[160px] lg:text-[210px] xl:text-[250px]"
+      aria-label="URPIRIODEV"
+    >
+      {
+        title.map((letter) => (
+          <span class="hero-letter inline-block opacity-0" aria-hidden="true">
+            {letter}
+          </span>
+        ))
+      }
+    </h1>
+    <div class="group absolute flex items-center justify-center">
+      <span
+        class="hero-outline absolute z-40 ml-5 border text-[8.5vw] leading-none font-black whitespace-nowrap
+            text-transparent opacity-0 select-none [-webkit-text-stroke:1.5px_#ffff] sm:ml-8 sm:text-[110px] sm:[-webkit-text-stroke:3px_#ffff] md:ml-12 md:text-[160px] lg:ml-16 lg:text-[210px] xl:text-[250px] xl:[-webkit-text-stroke:4px_#ffff]"
+        ><span class="sm:hidden">I</span>RIO<span class="sm:hidden">D</span
+        ></span
+      >
+      <Image
+        class="max-w-[65vw] object-contain mask-b-from-80% mask-b-to-85%    transition-opacity duration-300 group-hover:opacity-0 sm:max-w-md md:max-w-xl "
+        src={Urpiriodev}
+        alt="Urpirio, desarrollador web"
+      />
+      <Image
+        class="absolute inset-0 max-w-[65vw] mask-b-from-80% mask-b-to-85% opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:max-w-md md:max-w-xl "
+        src={Kakashi}
+        alt="Urpirio como Kakashi"
+      />
+    </div>
+  </div>
+
+  <p class="mt-4 text-center text-base text-gray-600 sm:text-lg">
+    Construyo sitios y apps rápidas, limpias y a medida.
+  </p>
+
+  <div class="mt-8 flex justify-center">
+    <Icon
+      name="lucide:arrow-down"
+      class="hero-arrow h-10 w-10 text-[#38b000] sm:h-15 sm:w-15"
+    />
+  </div>
+</section>
+<script>
+  import { animate, stagger } from "motion";
+
+  const letters = document.querySelectorAll<HTMLElement>(".hero-letter");
+
+  if (letters.length) {
+    animate(
+      letters,
+      { opacity: [0, 1], y: [60, 0], rotate: [8, 0] },
+      { duration: 0.7, delay: stagger(0.05), ease: [0.22, 1, 0.36, 1] },
+    );
+  }
+
+  const outline = document.querySelector<HTMLElement>(".hero-outline");
+
+  if (outline) {
+    animate(
+      outline,
+      { opacity: [0, 1], scale: [0.85, 1] },
+      { duration: 0.5, delay: 0.9, ease: [0.22, 1, 0.36, 1] },
+    );
+  }
+
+  const arrow = document.querySelector<HTMLElement>(".hero-arrow");
+
+  if (arrow) {
+    animate(
+      arrow,
+      { y: [0, 10, 0] },
+      { duration: 1.4, repeat: Infinity, ease: "easeInOut" },
+    );
+  }
+
+  const floatingIcons =
+    document.querySelectorAll<HTMLElement>(".floating-icon");
+
+  floatingIcons.forEach((icon, index) => {
+    const duration = 3 + Math.random() * 2;
+    const distance = 12 + Math.random() * 10;
+    const rotate = 6 + Math.random() * 6;
+
+    animate(
+      icon,
+      { opacity: [0, 1] },
+      { duration: 0.6, delay: 0.6 + index * 0.15, ease: "easeOut" },
+    );
+
+    animate(
+      icon,
+      {
+        y: [0, -distance, 0, distance, 0],
+        rotate: [0, rotate, 0, -rotate, 0],
+      },
+      {
+        duration,
+        delay: index * 0.4,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    );
+  });
+</script>
