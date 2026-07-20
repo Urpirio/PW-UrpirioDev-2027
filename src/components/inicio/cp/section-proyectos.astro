@@ -1,9 +1,7 @@
 ---
 import CardContents from "../../share-ui/CardContents.astro";
-import { data_proyectos } from "../data/data-proyectos";
 import { Fetch } from "../../../lib/Fetch-Public-Informacion";
 import type { tp_proyectos, tp_section_proyecto } from "../types/tp-proyectos";
-import { date } from "astro:schema";
 
 const data: tp_section_proyecto = await Fetch({
   pathname: "/api/section-proyecto?populate=*",
