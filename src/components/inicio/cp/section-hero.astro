@@ -3,7 +3,8 @@ import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import Urpiriodev from "../../../assets/foto_sin_fondo.png";
 import Kakashi from "../../../assets/kakashi_armadura_sin_fondo.png";
-
+import { Fetch } from "../../../lib/Fetch-Public-Informacion";
+import type { tp_hero } from "../types/tp-hero";
 const title = "URPIRIODEV".split("");
 
 const redes = [
@@ -36,6 +37,8 @@ const redes = [
     left: "84%",
   },
 ];
+
+const data: tp_hero = await Fetch({ pathname: "/api/section-hero" });
 ---
 
 <section class="p-4 pt-6 sm:p-10 sm:pt-10">
@@ -78,12 +81,12 @@ const redes = [
         ></span
       >
       <Image
-        class="max-w-[65vw] object-contain mask-b-from-80% mask-b-to-85%    transition-opacity duration-300 group-hover:opacity-0 sm:max-w-md md:max-w-xl "
+        class="max-w-[65vw] object-contain mask-b-from-80% mask-b-to-85% transition-opacity duration-300 group-hover:opacity-0 sm:max-w-md md:max-w-xl"
         src={Urpiriodev}
         alt="Urpirio, desarrollador web"
       />
       <Image
-        class="absolute inset-0 max-w-[65vw] mask-b-from-80% mask-b-to-85% opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:max-w-md md:max-w-xl "
+        class="absolute inset-0 max-w-[65vw] mask-b-from-80% mask-b-to-85% opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:max-w-md md:max-w-xl"
         src={Kakashi}
         alt="Urpirio como Kakashi"
       />
