@@ -1,0 +1,206 @@
+---
+import { Icon } from "astro-icon/components";
+import CardProyecto from "../../share-ui/CardProyecto.astro";
+import { Fetch, API_URL } from "../../../lib/Fetch-Public-Informacion";
+import type { tp_proyectos } from "../types/tp-proyectos";
+
+const data: tp_proyectos = await Fetch({
+  pathname: "/api/proyectos?populate=*",
+});
+
+const proyectos = data?.data ?? [];
+
+// Categorías únicas para el filtro
+const categorias = [
+  ...new Set(
+    proyectos.flatMap((p: any) =>
+      (p.categoria_proyectos ?? []).map((c: any) => c.nombre),
+    ),
+  ),
+] as string[];
+---
+
+<section
+  class="relative overflow-hidden px-6 py-20 sm:px-10 sm:py-24"
+>
+  <!-- Fondos decorativos -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute left-1/2 top-0 h-100 w-100 -translate-x-1/2 rounded-full bg-linear-to-b from-[#38b000]/12 to-transparent blur-3xl"></div>
+    <div class="absolute right-1/4 top-1/2 h-72 w-72 rounded-full bg-linear-to-t from-[#38b000]/6 to-transparent blur-3xl"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl">
+    <!-- Encabezado -->
+    <div class="text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#38b000]">
+        <Icon name="lucide:layout-grid" class="h-3.5 w-3.5" />
+        Portafolio completo
+      </span>
+      <h1 class="mt-5 text-balance text-4xl font-black tracking-tight text-neutral-900 sm:text-5xl">
+        Todos los <span class="text-[#38b000]">proyectos</span>
+      </h1>
+      <p class="mx-auto mt-4 max-w-lg text-base text-neutral-600">
+        Explora todo lo que he construido, desde prototipos hasta aplicaciones
+        en producción.
+      </p>
+    </div>
+
+    <!-- Buscador + Filtro de categorías -->
+    <div class="mx-auto mt-10 max-w-3xl">
+      <div class="relative">
+        <Icon name="lucide:search" class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+        <input
+          id="buscador-proyectos"
+          type="text"
+          placeholder="Buscar por nombre o descripción..."
+          class="w-full rounded-full border border-neutral-300 bg-white py-3 pl-11 pr-4 text-sm text-neutral-900 shadow-sm transition-all focus:border-[#38b000] focus:outline-none focus:ring-2 focus:ring-[#38b000]/20"
+        />
+      </div>
+
+      {categorias.length > 0 && (
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            data-categoria="todos"
+            class="filtro-cat rounded-full border border-[#38b000] bg-[#38b000] px-4 py-1.5 text-xs font-semibold text-white transition-all"
+            aria-pressed="true"
+          >
+            Todos
+          </button>
+          {categorias.map((cat) => (
+            <button
+              type="button"
+              data-categoria={cat.toLowerCase()}
+              class="filtro-cat rounded-full border border-neutral-300 bg-white px-4 py-1.5 text-xs font-semibold text-neutral-700 transition-all hover:border-[#38b000] hover:text-[#38b000]"
+              aria-pressed="false"
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <p id="contador-proyectos" class="mt-4 text-center text-xs font-medium text-neutral-400"></p>
+    </div>
+
+    <!-- Estado sin resultados (filtros) -->
+    <div
+      id="sin-resultados"
+      class="mx-auto mt-10 hidden max-w-xl flex-col items-center rounded-3xl border border-dashed border-neutral-300 bg-neutral-50/60 px-6 py-14 text-center"
+    >
+      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#38b000]/10 text-[#38b000]">
+        <Icon name="lucide:search-x" class="h-6 w-6" />
+      </div>
+      <p class="mt-4 font-semibold text-neutral-900">Sin coincidencias</p>
+      <p class="mt-1 text-sm text-neutral-500">
+        No hay proyectos con los filtros seleccionados.
+      </p>
+    </div>
+
+    <!-- Estado vacío (sin proyectos) -->
+    {proyectos.length === 0 && (
+      <div class="mx-auto mt-10 flex max-w-xl flex-col items-center rounded-3xl border border-dashed border-neutral-300 bg-neutral-50/60 px-6 py-16 text-center">
+        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#38b000]/10 text-[#38b000]">
+          <Icon name="lucide:folder-open" class="h-7 w-7" />
+        </div>
+        <p class="mt-5 text-lg font-semibold text-neutral-900">Proyectos en camino</p>
+        <p class="mt-1 max-w-sm text-sm text-neutral-500">
+          Estoy preparando algunos trabajos para mostrarlos aquí muy pronto.
+        </p>
+      </div>
+    )}
+
+    <!-- Grid -->
+    <div
+      id="lista-proyectos"
+      class="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {proyectos.map((proyecto: any) => {
+        const cats = (proyecto.categoria_proyectos ?? []).map((c: any) => c.nombre);
+        const imagen = proyecto.documentos?.[0];
+        return (
+          <CardProyecto
+            class="proyecto-item"
+            titulo={proyecto.titulo}
+            descripcion={proyecto.descripcion}
+            subtitulo={proyecto.subtitulo}
+            categoria={cats[0]}
+            tecnologias={(proyecto.tecnologia_proyectos ?? []).map((t: any) => t.nombre)}
+            imagen={imagen ? `${API_URL}${imagen.url}` : undefined}
+            href={`/proyectos/${proyecto.documentId}`}
+            urlProyecto={proyecto.url_proyecto}
+            urlGithub={proyecto.url_githud}
+            data-titulo={proyecto.titulo?.toLowerCase()}
+            data-descripcion={proyecto.descripcion?.toLowerCase()}
+            data-categorias={cats.join(",").toLowerCase()}
+          />
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<script>
+  const buscador = document.querySelector<HTMLInputElement>("#buscador-proyectos");
+  const items = document.querySelectorAll<HTMLElement>(".proyecto-item");
+  const sinResultados = document.querySelector<HTMLElement>("#sin-resultados");
+  const contador = document.querySelector<HTMLElement>("#contador-proyectos");
+  const chips = document.querySelectorAll<HTMLButtonElement>(".filtro-cat");
+
+  let categoriaActiva = "todos";
+
+  const activarChip = (activo: HTMLButtonElement) => {
+    chips.forEach((chip) => {
+      const esActivo = chip === activo;
+      chip.setAttribute("aria-pressed", String(esActivo));
+      chip.classList.toggle("border-[#38b000]", esActivo);
+      chip.classList.toggle("bg-[#38b000]", esActivo);
+      chip.classList.toggle("text-white", esActivo);
+      chip.classList.toggle("border-neutral-300", !esActivo);
+      chip.classList.toggle("bg-white", !esActivo);
+      chip.classList.toggle("text-neutral-700", !esActivo);
+      chip.classList.toggle("hover:border-[#38b000]", !esActivo);
+      chip.classList.toggle("hover:text-[#38b000]", !esActivo);
+    });
+  };
+
+  const filtrar = () => {
+    const texto = buscador?.value.trim().toLowerCase() ?? "";
+    let visibles = 0;
+
+    items.forEach((item) => {
+      const titulo = item.dataset.titulo ?? "";
+      const descripcion = item.dataset.descripcion ?? "";
+      const categorias = item.dataset.categorias ?? "";
+
+      const coincideTexto =
+        !texto || titulo.includes(texto) || descripcion.includes(texto);
+      const coincideCategoria =
+        categoriaActiva === "todos" ||
+        categorias.split(",").includes(categoriaActiva);
+
+      const visible = coincideTexto && coincideCategoria;
+      item.classList.toggle("hidden", !visible);
+      if (visible) visibles++;
+    });
+
+    sinResultados?.classList.toggle("hidden", visibles !== 0 || items.length === 0);
+    if (contador) {
+      contador.textContent =
+        items.length === 0
+          ? ""
+          : `${visibles} ${visibles === 1 ? "proyecto" : "proyectos"}`;
+    }
+  };
+
+  buscador?.addEventListener("input", filtrar);
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      categoriaActiva = chip.dataset.categoria ?? "todos";
+      activarChip(chip);
+      filtrar();
+    });
+  });
+
+  filtrar();
+</script>
