@@ -49,19 +49,20 @@ const proyectos = Array.isArray(data.data) ? data.data : (data.data?.proyectos |
       </div>
     )}
 
-    {proyectos.map((proyecto: any) => (
-      <CardProyecto
-        titulo={proyecto.titulo}
-        descripcion={proyecto.descripcion}
-        categoria={proyecto.categoria_proyectos?.[0]?.nombre}
-        tecnologias={(proyecto.tecnologia_proyectos ?? []).map((t: any) => t.nombre)}
-        imagen={proyecto.documentos?.[0]?.url ? `${API_URL}${proyecto.documentos[0].url}` : undefined}
-        href={proyecto.documentId ? `/proyectos/${proyecto.documentId}` : undefined}
-        urlProyecto={proyecto.url_proyecto}
-        urlGithub={proyecto.url_githud}
-        maxTecnologias={3}
-      />
-    ))}
+    {proyectos.map((proyecto: any) => {
+      const imagen = proyecto.images?.[0] ?? proyecto.documentos?.[0];
+      return (
+        <CardProyecto
+          titulo={proyecto.titulo}
+          descripcion={proyecto.descripcion}
+          categoria={proyecto.categoria_proyectos?.[0]?.nombre}
+          tecnologias={(proyecto.tecnologia_proyectos ?? []).map((t: any) => t.nombre)}
+          imagen={imagen?.url ? `${API_URL}${imagen.url}` : undefined}
+          href={`/proyectos/${proyecto.documentId}`}
+          maxTecnologias={3}
+        />
+      );
+    })}
   </div>
 
   <!-- CTA final -->
