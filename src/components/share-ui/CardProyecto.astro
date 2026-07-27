@@ -8,12 +8,8 @@ interface Props {
   categoria?: string;
   tecnologias?: string[];
   imagen?: string;
-  /** Si se define, toda la tarjeta enlaza aquí (sin botones de acción). */
-  href?: string;
-  /** Botón principal (abre en nueva pestaña). */
-  urlProyecto?: string;
-  /** Botón secundario a GitHub. */
-  urlGithub?: string;
+  /** Toda la tarjeta enlaza aquí — es la única forma de interacción. */
+  href: string;
   maxTecnologias?: number;
   class?: string;
   /** Permite pasar atributos data-* (ej. para filtros). */
@@ -28,8 +24,6 @@ const {
   tecnologias = [],
   imagen,
   href,
-  urlProyecto,
-  urlGithub,
   maxTecnologias = 4,
   class: className,
   ...rest
@@ -38,7 +32,6 @@ const {
 const inicial = (titulo ?? "P").trim().charAt(0).toUpperCase();
 const techs = tecnologias.slice(0, maxTecnologias);
 const restantes = tecnologias.length - techs.length;
-const tieneAcciones = Boolean(urlProyecto || urlGithub);
 ---
 
 <article
@@ -48,11 +41,7 @@ const tieneAcciones = Boolean(urlProyecto || urlGithub);
   ]}
   {...rest}
 >
-  {
-    href && (
-      <a href={href} class="absolute inset-0 z-10" aria-label={titulo} />
-    )
-  }
+  <a href={href} class="absolute inset-0 z-10" aria-label={titulo} />
 
   <!-- Imagen / Placeholder -->
   <div class="relative h-48 w-full overflow-hidden rounded-2xl bg-neutral-100">
@@ -82,13 +71,13 @@ const tieneAcciones = Boolean(urlProyecto || urlGithub);
 
   <!-- Contenido -->
   <div class="flex flex-1 flex-col p-4">
-    <div class="flex items-start justify-between gap-2">
+    <div class="flex flex-col items-start justify-between gap-2">
       <h3 class="line-clamp-1 text-lg font-bold text-neutral-900 transition-colors group-hover:text-[#38b000]">
         {titulo}
       </h3>
       {
         subtitulo && (
-          <span class="whitespace-nowrap rounded-md bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">
+          <span class="whitespace-nowrap rounded-md  py-0.5 text-xs font-medium text-neutral-600">
             {subtitulo}
           </span>
         )
@@ -120,46 +109,12 @@ const tieneAcciones = Boolean(urlProyecto || urlGithub);
       )
     }
 
-    {
-      tieneAcciones && (
-        <div class="mt-6 flex items-center gap-3 border-t border-neutral-100 pt-4">
-          {urlProyecto && (
-            <a
-              href={urlProyecto}
-              target="_blank"
-              rel="noreferrer"
-              class="relative z-20 inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-linear-to-r from-[#38b000] to-[#2d8d00] px-4 py-2.5 text-center text-xs font-bold text-white shadow-md shadow-[#38b000]/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-[#38b000]/30 active:scale-[0.98]"
-            >
-              <Icon name="lucide:external-link" class="h-3.5 w-3.5" />
-              <span>Ver proyecto</span>
-            </a>
-          )}
-          {urlGithub && (
-            <a
-              href={urlGithub}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Ver código en GitHub"
-              class="relative z-20 inline-flex items-center justify-center gap-1.5 rounded-xl border border-neutral-300 bg-neutral-50 px-4 py-2.5 text-xs font-bold text-neutral-800 transition-all duration-300 hover:scale-[1.02] hover:border-neutral-900 hover:bg-neutral-900 hover:text-white active:scale-[0.98]"
-            >
-              <Icon name="simple-icons:github" class="h-3.5 w-3.5" />
-              <span>GitHub</span>
-            </a>
-          )}
-        </div>
-      )
-    }
-
-    {
-      href && !tieneAcciones && (
-        <span class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-[#38b000]">
-          Ver proyecto
-          <Icon
-            name="lucide:arrow-right"
-            class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
-          />
-        </span>
-      )
-    }
+    <span class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-[#38b000]">
+      Ver proyecto
+      <Icon
+        name="lucide:arrow-right"
+        class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+      />
+    </span>
   </div>
 </article>
