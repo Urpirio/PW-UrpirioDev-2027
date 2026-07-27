@@ -1,11 +1,29 @@
 ---
 import LayoutAstroComponent from "../../layouts/Layout.astro";
+import SectionDetalleBlog from "../../components/blog/cp/section-detalle-blog.astro";
+import SectionRelacionadosBlog from "../../components/blog/cp/section-relacionados-blog.astro";
+import CTAAgencia from "../../components/share-ui/CTAAgencia.astro";
+import { Fetch } from "../../lib/Fetch-Public-Informacion";
+import type { tp_blogs, object_blog } from "../../components/blog/types/tp-blog";
 
-export function getStaticPaths() {
-  return [];
+export async function getStaticPaths() {
+  const data: tp_blogs = await Fetch({ pathname: "/api/blogs?populate=*" });
+  const posts = data?.data ?? [];
+
+  return posts.map((post) => ({
+    params: { id_blog: post.documentId },
+    props: { post, posts },
+  }));
 }
+
+const { post, posts } = Astro.props as {
+  post: object_blog;
+  posts: object_blog[];
+};
 ---
 
 <LayoutAstroComponent>
-    
+  <SectionDetalleBlog post={post} />
+  <SectionRelacionadosBlog posts={posts} actual={post} />
+  <CTAAgencia variant="outline" />
 </LayoutAstroComponent>
