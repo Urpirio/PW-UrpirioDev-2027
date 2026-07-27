@@ -1,6 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
 import { API_URL } from "../../../lib/Fetch-Public-Informacion";
+import { parseContenido } from "../../../lib/parse-rich-text";
+import { getImagenProyecto } from "../lib/proyecto-utils";
+import RichSegmento from "../../share-ui/RichSegmento.astro";
 import type { object_proyecto } from "../types/tp-proyectos";
 
 interface Props {
@@ -10,7 +13,7 @@ interface Props {
 const { proyecto } = Astro.props;
 
 const inicial = (proyecto.titulo ?? "P").trim().charAt(0).toUpperCase();
-const imagen = proyecto.documentos?.[0];
+const imagen = getImagenProyecto(proyecto);
 const categorias = proyecto.categoria_proyectos ?? [];
 const tecnologias = proyecto.tecnologia_proyectos ?? [];
 
@@ -37,15 +40,17 @@ const ficha = [
     valor: `${tecnologias.length}`,
   },
 ].filter(Boolean) as { icon: string; etiqueta: string; valor: string }[];
+
+const bloques = parseContenido(proyecto.contenido);
 ---
 
-<article class="relative overflow-hidden px-6 py-16 sm:px-10 sm:py-20">
+<article class="relative overflow-hidden  py-16 0 sm:py-20">
   <!-- Fondos decorativos -->
   <div class="pointer-events-none absolute inset-0 -z-10">
     <div class="absolute left-1/2 top-0 h-100 w-100 -translate-x-1/2 rounded-full bg-linear-to-b from-[#38b000]/12 to-transparent blur-3xl"></div>
   </div>
 
-  <div class="relative mx-auto max-w-5xl">
+  <div class="relative mx-auto max-w-6xl">
     <!-- Volver -->
     <a
       href="/proyectos"
@@ -104,10 +109,61 @@ const ficha = [
     <!-- Contenido -->
     <div class="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-[1.6fr_1fr]">
       <!-- Principal -->
-      <div>
-        <p class="text-lg leading-relaxed text-neutral-700">
-          {proyecto.descripcion}
-        </p>
+      <div class="space-y-5">
+        {bloques.length > 0 ? (
+          bloques.map((bloque) => {
+            if (bloque.tipo === "titulo") {
+              const TagTitulo = bloque.nivel === 2 ? "h2" : "h3";
+              return (
+                <TagTitulo class="text-2xl font-bold text-neutral-900">
+                  {bloque.segmentos!.map((seg) => (
+                    <RichSegmento {...seg} />
+                  ))}
+                </TagTitulo>
+              );
+            }
+            if (bloque.tipo === "lista") {
+              const TagLista = bloque.ordenada ? "ol" : "ul";
+              return (
+                <TagLista class="space-y-2">
+                  {bloque.items!.map((item) => (
+                    <li class="flex gap-2.5 text-lg leading-relaxed text-neutral-700">
+                      <Icon
+                        name="lucide:check"
+                        class="mt-1.5 h-4 w-4 shrink-0 text-[#38b000]"
+                      />
+                      <span>
+                        {item.map((seg) => (
+                          <RichSegmento {...seg} />
+                        ))}
+                      </span>
+                    </li>
+                  ))}
+                </TagLista>
+              );
+            }
+            if (bloque.tipo === "cita") {
+              return (
+                <blockquote class="border-l-4 border-[#38b000]/30 pl-4 text-lg italic leading-relaxed text-neutral-600">
+                  {bloque.segmentos!.map((seg) => (
+                    <RichSegmento {...seg} />
+                  ))}
+                </blockquote>
+              );
+            }
+            return (
+              <p class="text-lg leading-relaxed text-neutral-700">
+                {bloque.segmentos!.map((seg) => (
+                  <RichSegmento {...seg} />
+                ))}
+              </p>
+            );
+          })
+        ) : (
+          <p class="text-lg leading-relaxed text-neutral-700">
+            {proyecto.descripcion}
+          </p>
+        )}
       </div>
 
       <!-- Ficha técnica -->
