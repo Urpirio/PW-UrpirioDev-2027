@@ -1,25 +1,52 @@
 ---
-// Marquee embebible de empresas. Logos en: public/logos/
-const empresas = [
+import { API_URL } from "../../../lib/Fetch-Public-Informacion";
+import type { object_empresa } from "../types/tp-empresa";
+
+interface Props {
+  empresas?: object_empresa[];
+}
+
+// Respaldo mientras el CMS no tenga empresas cargadas.
+const EMPRESAS_FALLBACK = [
   {
-    nombre: "OGTIC",
+    titulo: "OGTIC",
     descripcion: "Oficina Gubernamental de Tecnologías",
-    logo: "/logos/Ogtic-Logo.png",
+    logoUrl: "/logos/Ogtic-Logo.png",
     url: "https://ogtic.gob.do",
   },
   {
-    nombre: "ITU",
+    titulo: "ITU",
     descripcion: "Unión Internacional de Telecomunicaciones",
-    logo: "/logos/Itu-Logo.png",
+    logoUrl: "/logos/Itu-Logo.png",
     url: "https://www.itu.int",
   },
   {
-    nombre: "Siddhatech",
+    titulo: "Siddhatech",
     descripcion: "Innovate, Plan, Execute",
-    logo: "/logos/Siddhatech.png",
+    logoUrl: "/logos/Siddhatech.png",
     url: "https://siddhatech.com",
   },
 ];
+
+// El CMS no tiene un campo de URL para la empresa; se mantiene un enlace de
+// respaldo por nombre para las que sí conocemos.
+const URLS_CONOCIDAS: Record<string, string> = {
+  ogtic: "https://ogtic.gob.do",
+  itu: "https://www.itu.int",
+  siddhatech: "https://siddhatech.com",
+};
+
+const { empresas: empresasCms = [] } = Astro.props;
+
+const empresas =
+  empresasCms.length > 0
+    ? empresasCms.map((e) => ({
+        titulo: e.titulo,
+        descripcion: e.descripcion,
+        logoUrl: e.logo?.url ? `${API_URL}${e.logo.url}` : undefined,
+        url: URLS_CONOCIDAS[e.titulo?.toLowerCase()?.trim()],
+      }))
+    : EMPRESAS_FALLBACK;
 
 // Repetimos la lista para llenar el ancho; el track se duplica para el loop.
 const secuencia = [...empresas, ...empresas, ...empresas, ...empresas];
@@ -31,25 +58,46 @@ const track = [...secuencia, ...secuencia];
 >
   <div class="marquee-track flex w-max items-center">
     {
-      track.map((empresa, i) => (
-        <a
-          href={empresa.url}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={empresa.nombre}
-          aria-hidden={i >= secuencia.length ? "true" : undefined}
-          title={`${empresa.nombre} — ${empresa.descripcion}`}
-          tabindex={i >= secuencia.length ? -1 : undefined}
-          class="mx-8 flex shrink-0 items-center opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 sm:mx-10"
-        >
+      track.map((empresa, i) => {
+        const contenido = empresa.logoUrl ? (
           <img
-            src={empresa.logo}
-            alt={empresa.nombre}
+            src={empresa.logoUrl}
+            alt={empresa.titulo}
             class="h-8 w-auto max-w-32 object-contain sm:h-10"
             loading="lazy"
           />
-        </a>
-      ))
+        ) : (
+          <span class="text-sm font-bold text-neutral-400">{empresa.titulo}</span>
+        );
+
+        const clases =
+          "mx-8 flex shrink-0 items-center opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 sm:mx-10";
+        const titulo = `${empresa.titulo}${empresa.descripcion ? ` — ${empresa.descripcion}` : ""}`;
+
+        return empresa.url ? (
+          <a
+            href={empresa.url}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={empresa.titulo}
+            aria-hidden={i >= secuencia.length ? "true" : undefined}
+            title={titulo}
+            tabindex={i >= secuencia.length ? -1 : undefined}
+            class={clases}
+          >
+            {contenido}
+          </a>
+        ) : (
+          <span
+            aria-label={empresa.titulo}
+            aria-hidden={i >= secuencia.length ? "true" : undefined}
+            title={titulo}
+            class={clases}
+          >
+            {contenido}
+          </span>
+        );
+      })
     }
   </div>
 </div>
