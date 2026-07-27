@@ -1,0 +1,115 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  /** "solid": banner verde sólido (home, listado). "outline": tarjeta clara con borde (detalle). */
+  variant?: "solid" | "outline";
+}
+
+const { variant = "solid" } = Astro.props;
+
+// TODO: reemplazar con los datos reales de la agencia
+const agencia = {
+  nombre: "Mi Agencia",
+  url: "https://agencia.com",
+  descripcion:
+    variant === "solid"
+      ? "¿Buscas un equipo completo para llevar tu marca al siguiente nivel? En mi agencia diseñamos y construimos experiencias digitales a medida."
+      : "¿Un proyecto más ambicioso? En mi agencia contamos con un equipo completo para llevarlo de la idea a producción.",
+};
+---
+
+{
+  variant === "solid" ? (
+    <section class="relative px-6 py-12 sm:px-10 sm:py-16">
+      <div class="cta-agencia relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-linear-to-br from-[#38b000] to-[#2d8d00] p-10 text-white shadow-xl shadow-[#38b000]/25 sm:p-14">
+        <!-- Decoración -->
+        <div class="pointer-events-none absolute inset-0 z-0">
+          <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+          <div class="absolute -bottom-20 -left-10 h-64 w-64 rounded-full bg-black/10 blur-3xl" />
+          <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-size-[48px_48px] mask-[radial-gradient(ellipse_at_center,black,transparent_80%)]" />
+        </div>
+
+        <div class="relative z-10 grid gap-8 lg:grid-cols-[1.6fr_1fr] lg:items-center">
+          <div>
+            <span class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur">
+              <Icon name="lucide:rocket" class="h-3.5 w-3.5" />
+              ¿Algo más grande?
+            </span>
+
+            <h2 class="mt-5 text-balance text-3xl font-black tracking-tight sm:text-4xl">
+              Trabajemos con todo un equipo
+            </h2>
+
+            <p class="mt-4 max-w-xl leading-relaxed text-white/90">
+              {agencia.descripcion}
+            </p>
+          </div>
+
+          <div class="flex lg:justify-end">
+            <a
+              href={agencia.url}
+              target="_blank"
+              rel="noreferrer"
+              class="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-bold text-[#2d8d00] shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+            >
+              Visitar {agencia.nombre}
+              <Icon
+                name="lucide:arrow-up-right"
+                class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="relative px-6 py-8 sm:px-10">
+      <div class="cta-agencia relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-[#38b000]/30 bg-[#38b000]/5 p-8 sm:p-10">
+        <div class="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-[#38b000]/10 blur-3xl" />
+
+        <div class="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#38b000]">
+              <Icon name="lucide:rocket" class="h-3.5 w-3.5" />
+              ¿Algo más grande?
+            </span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
+              ¿Necesitas un equipo completo?
+            </h2>
+            <p class="mt-2 max-w-md text-neutral-600">{agencia.descripcion}</p>
+          </div>
+
+          <a
+            href={agencia.url}
+            target="_blank"
+            rel="noreferrer"
+            class="group inline-flex shrink-0 items-center gap-2 rounded-full bg-linear-to-r from-[#38b000] to-[#2d8d00] px-7 py-3.5 font-bold text-white shadow-lg shadow-[#38b000]/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#38b000]/30"
+          >
+            Visitar {agencia.nombre}
+            <Icon
+              name="lucide:arrow-up-right"
+              class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  import { animate, inView } from "motion";
+
+  inView(
+    ".cta-agencia",
+    (element) => {
+      animate(
+        element,
+        { opacity: [0, 1], y: [32, 0] },
+        { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+      );
+    },
+    { amount: 0.3 },
+  );
+</script>
