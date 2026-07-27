@@ -1,17 +1,20 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Fetch } from "../../../lib/Fetch-Public-Informacion";
+import type { tp_sobre_mi_experiencia } from "../types/tp-experiencia";
 
-const experiencias = [
+// Respaldo mientras el CMS no tenga experiencias cargadas.
+const EXPERIENCIAS_FALLBACK = [
   {
     puesto: "Desarrollador de software — Departamento de Innovación",
     empresa: "OGTIC · Oficina Gubernamental de Tecnologías (Santo Domingo)",
     periodo: "May 2025 — May 2026",
     actual: false,
     logros: [
-      "Lideré la implementación técnica del primer asistente de inteligencia artificial del Estado dominicano, desde el diseño hasta producción.",
-      "Desarrollé aplicaciones web y móviles con arquitecturas modernas y las mejores prácticas de ingeniería de software.",
-      "Colaboré con equipos multidisciplinarios en proyectos de innovación y transformación digital de impacto nacional.",
-      "Representé a la entidad como portavoz técnico en medios (Noticias SIN y Radio CDN), presentando iniciativas de IA.",
+      { texto: "Lideré la implementación técnica del primer asistente de inteligencia artificial del Estado dominicano, desde el diseño hasta producción.", icono: "lucide:check" },
+      { texto: "Desarrollé aplicaciones web y móviles con arquitecturas modernas y las mejores prácticas de ingeniería de software.", icono: "lucide:check" },
+      { texto: "Colaboré con equipos multidisciplinarios en proyectos de innovación y transformación digital de impacto nacional.", icono: "lucide:check" },
+      { texto: "Representé a la entidad como portavoz técnico en medios (Noticias SIN y Radio CDN), presentando iniciativas de IA.", icono: "lucide:check" },
     ],
   },
   {
@@ -20,8 +23,8 @@ const experiencias = [
     periodo: "Oct 2024 — Presente",
     actual: true,
     logros: [
-      "Diseño y desarrollo de sitios y aplicaciones a medida de principio a fin.",
-      "Trabajo con clientes cuidando la experiencia de usuario, el rendimiento y la mantenibilidad del código.",
+      { texto: "Diseño y desarrollo de sitios y aplicaciones a medida de principio a fin.", icono: "lucide:check" },
+      { texto: "Trabajo con clientes cuidando la experiencia de usuario, el rendimiento y la mantenibilidad del código.", icono: "lucide:check" },
     ],
   },
   {
@@ -30,12 +33,47 @@ const experiencias = [
     periodo: "Mar 2025 — May 2025",
     actual: false,
     logros: [
-      "Diseño y desarrollo de interfaces para aplicaciones móviles con Kotlin Multiplatform.",
-      "Participación activa en equipos bajo metodologías ágiles.",
-      "Apoyo en la definición de la arquitectura de la información y los flujos de usuario.",
+      { texto: "Diseño y desarrollo de interfaces para aplicaciones móviles con Kotlin Multiplatform.", icono: "lucide:check" },
+      { texto: "Participación activa en equipos bajo metodologías ágiles.", icono: "lucide:check" },
+      { texto: "Apoyo en la definición de la arquitectura de la información y los flujos de usuario.", icono: "lucide:check" },
     ],
   },
 ];
+
+const data: tp_sobre_mi_experiencia = await Fetch({
+  pathname:
+    "/api/sobre-mi-experiencia?populate[card_experiencias][populate][lista_de_trayectorias][populate]=iconos",
+});
+
+const formatearMes = (fecha?: string | null) =>
+  fecha
+    ? new Intl.DateTimeFormat("es-DO", { month: "short", year: "numeric" }).format(
+        new Date(fecha),
+      )
+    : null;
+
+const cards = data?.data?.card_experiencias ?? [];
+
+const experiencias =
+  cards.length > 0
+    ? cards.map((card) => {
+        const actual = !card.fecha_final;
+        const inicio = formatearMes(card.fecha_inicio);
+        const final = actual ? "Presente" : formatearMes(card.fecha_final);
+        const periodo = [inicio, final].filter(Boolean).join(" — ");
+
+        return {
+          puesto: card.titulo,
+          empresa: card.empresa,
+          periodo,
+          actual,
+          logros: (card.lista_de_trayectorias ?? []).map((t) => ({
+            texto: t.titulo,
+            icono: t.iconos?.[0]?.icono ?? "lucide:check",
+          })),
+        };
+      })
+    : EXPERIENCIAS_FALLBACK;
 ---
 
 <section class="relative overflow-hidden bg-white px-6 py-24 text-neutral-900 sm:px-10 sm:py-28">
@@ -50,8 +88,13 @@ const experiencias = [
         Trayectoria
       </span>
       <h2 class="mt-6 text-balance text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">
-        Experiencia
+        {data?.data?.titulo ?? "Experiencia"}
       </h2>
+      {
+        data?.data?.subtitulo && (
+          <p class="mt-3 text-neutral-500">{data.data.subtitulo}</p>
+        )
+      }
     </div>
 
     <div class="mt-14 space-y-8 border-l border-neutral-200 pl-8">
@@ -67,23 +110,27 @@ const experiencias = [
             <div class="rounded-2xl border border-neutral-200 bg-neutral-50/50 p-6 transition-all duration-300 hover:border-[#38b000]/40 hover:bg-white hover:shadow-md">
               <div class="flex flex-wrap items-start justify-between gap-2">
                 <h3 class="text-lg font-bold text-neutral-900">{exp.puesto}</h3>
-                <span class="whitespace-nowrap rounded-full bg-[#38b000]/10 px-3 py-1 text-xs font-semibold text-[#38b000]">
-                  {exp.periodo}
-                </span>
+                {exp.periodo && (
+                  <span class="whitespace-nowrap rounded-full bg-[#38b000]/10 px-3 py-1 text-xs font-semibold text-[#38b000]">
+                    {exp.periodo}
+                  </span>
+                )}
               </div>
               <p class="mt-1 text-sm text-neutral-600">{exp.empresa}</p>
 
-              <ul class="mt-4 space-y-2">
-                {exp.logros.map((logro) => (
-                  <li class="flex gap-2.5 text-sm leading-relaxed text-neutral-700">
-                    <Icon
-                      name="lucide:check"
-                      class="mt-0.5 h-4 w-4 shrink-0 text-[#38b000]"
-                    />
-                    {logro}
-                  </li>
-                ))}
-              </ul>
+              {exp.logros.length > 0 && (
+                <ul class="mt-4 space-y-2">
+                  {exp.logros.map((logro) => (
+                    <li class="flex gap-2.5 text-sm leading-relaxed text-neutral-700">
+                      <Icon
+                        name={logro.icono}
+                        class="mt-0.5 h-4 w-4 shrink-0 text-[#38b000]"
+                      />
+                      {logro.texto}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         ))
