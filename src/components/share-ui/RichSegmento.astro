@@ -1,0 +1,42 @@
+---
+interface Props {
+  texto: string;
+  negrita?: boolean;
+  cursiva?: boolean;
+  subrayado?: boolean;
+  tachado?: boolean;
+  codigo?: boolean;
+  enlace?: string;
+}
+
+const { texto, negrita, cursiva, subrayado, tachado, codigo, enlace } = Astro.props;
+---
+
+{
+  codigo ? (
+    <code class="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-[0.9em] text-neutral-800">
+      {texto}
+    </code>
+  ) : enlace ? (
+    <a
+      href={enlace}
+      target="_blank"
+      rel="noreferrer"
+      class="text-[#38b000] underline underline-offset-2 hover:text-[#2d8d00]"
+    >
+      {texto}
+    </a>
+  ) : negrita && cursiva ? (
+    <strong><em>{texto}</em></strong>
+  ) : negrita ? (
+    <strong>{texto}</strong>
+  ) : cursiva ? (
+    <em>{texto}</em>
+  ) : subrayado ? (
+    <u>{texto}</u>
+  ) : tachado ? (
+    <s>{texto}</s>
+  ) : (
+    texto
+  )
+}
