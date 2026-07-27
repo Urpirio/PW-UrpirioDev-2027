@@ -1,5 +1,11 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Fetch } from "../../../lib/Fetch-Public-Informacion";
+import type { tp_habilidades_tecnica } from "../types/tp-habilidades";
+
+const data: tp_habilidades_tecnica = await Fetch({
+  pathname: "/api/habilidades-tecnica",
+});
 
 const grupos = [
   {
@@ -58,8 +64,13 @@ const aficiones = [
         Lo que uso
       </span>
       <h2 class="mt-6 text-balance text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">
-        Habilidades técnicas
+        {data?.data?.titulo ?? "Habilidades técnicas"}
       </h2>
+      {
+        data?.data?.subtitulo && (
+          <p class="mt-3 text-neutral-500">{data.data.subtitulo}</p>
+        )
+      }
     </div>
 
     <div class="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2">
