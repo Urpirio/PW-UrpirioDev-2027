@@ -1,0 +1,138 @@
+---
+import { Icon } from "astro-icon/components";
+
+const grupos = [
+  {
+    icon: "lucide:layout-panel-left",
+    titulo: "Frontend",
+    items: [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "JavaScript",
+      "Tailwind CSS",
+      "Bootstrap",
+      "CSS",
+      "Less",
+    ],
+  },
+  {
+    icon: "lucide:server",
+    titulo: "Backend & Datos",
+    items: ["Node.js", "Python", "C#", "SQL", "Supabase"],
+  },
+  {
+    icon: "lucide:smartphone",
+    titulo: "Móvil",
+    items: ["React Native", "Kotlin"],
+  },
+  {
+    icon: "lucide:wrench",
+    titulo: "Herramientas & DevOps",
+    items: ["Docker", "Linux", "Livekit", "Figma", "WordPress", "Git & GitHub"],
+  },
+];
+
+const idiomas = [
+  { nombre: "Español", nivel: "Nativo", porcentaje: 100 },
+  { nombre: "Inglés", nivel: "Intermedio", porcentaje: 65 },
+];
+
+const aficiones = [
+  { icon: "lucide:book-open", texto: "Lectura" },
+  { icon: "lucide:music", texto: "Música" },
+  { icon: "lucide:code", texto: "Desarrollo web" },
+  { icon: "lucide:camera", texto: "Fotografía" },
+];
+---
+
+<section class="relative overflow-hidden px-6 py-24 sm:px-10 sm:py-28">
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-linear-to-t from-[#38b000]/8 to-transparent blur-3xl"></div>
+  </div>
+
+  <div class="mx-auto max-w-5xl">
+    <div class="text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#38b000]">
+        <Icon name="lucide:layers" class="h-3.5 w-3.5" />
+        Lo que uso
+      </span>
+      <h2 class="mt-6 text-balance text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">
+        Habilidades técnicas
+      </h2>
+    </div>
+
+    <div class="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2">
+      {
+        grupos.map((grupo) => (
+          <div class="rounded-3xl border border-neutral-200 bg-white/70 p-7 backdrop-blur-sm transition-all duration-300 hover:border-[#38b000]/40 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#38b000]/10 text-[#38b000]">
+                <Icon name={grupo.icon} class="h-5 w-5" />
+              </div>
+              <h3 class="text-lg font-bold text-neutral-900">{grupo.titulo}</h3>
+            </div>
+            <div class="mt-5 flex flex-wrap gap-2">
+              {grupo.items.map((item) => (
+                <span class="rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors duration-300 hover:border-[#38b000]/40 hover:text-[#38b000]">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Idiomas + Aficiones -->
+    <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div class="rounded-3xl border border-neutral-200 bg-white/70 p-7 backdrop-blur-sm">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#38b000]/10 text-[#38b000]">
+            <Icon name="lucide:languages" class="h-5 w-5" />
+          </div>
+          <h3 class="text-lg font-bold text-neutral-900">Idiomas</h3>
+        </div>
+        <div class="mt-6 space-y-4">
+          {
+            idiomas.map((idioma) => (
+              <div>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="font-semibold text-neutral-800">
+                    {idioma.nombre}
+                  </span>
+                  <span class="text-neutral-500">{idioma.nivel}</span>
+                </div>
+                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-neutral-200">
+                  <div
+                    class="h-full rounded-full bg-linear-to-r from-[#38b000] to-[#2d8d00]"
+                    style={{ width: `${idioma.porcentaje}%` }}
+                  />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="rounded-3xl border border-neutral-200 bg-white/70 p-7 backdrop-blur-sm">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#38b000]/10 text-[#38b000]">
+            <Icon name="lucide:heart" class="h-5 w-5" />
+          </div>
+          <h3 class="text-lg font-bold text-neutral-900">Fuera del código</h3>
+        </div>
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          {
+            aficiones.map((aficion) => (
+              <span class="inline-flex items-center gap-2.5 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-medium text-neutral-700">
+                <Icon name={aficion.icon} class="h-4 w-4 text-[#38b000]" />
+                {aficion.texto}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
