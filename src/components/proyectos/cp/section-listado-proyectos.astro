@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import CardProyecto from "../../share-ui/CardProyecto.astro";
 import { Fetch, API_URL } from "../../../lib/Fetch-Public-Informacion";
+import { getImagenProyecto } from "../lib/proyecto-utils";
 import type { tp_proyectos } from "../types/tp-proyectos";
 
 const data: tp_proyectos = await Fetch({
@@ -117,7 +118,7 @@ const categorias = [
     >
       {proyectos.map((proyecto: any) => {
         const cats = (proyecto.categoria_proyectos ?? []).map((c: any) => c.nombre);
-        const imagen = proyecto.documentos?.[0];
+        const imagen = getImagenProyecto(proyecto);
         return (
           <CardProyecto
             class="proyecto-item"
@@ -128,8 +129,6 @@ const categorias = [
             tecnologias={(proyecto.tecnologia_proyectos ?? []).map((t: any) => t.nombre)}
             imagen={imagen ? `${API_URL}${imagen.url}` : undefined}
             href={`/proyectos/${proyecto.documentId}`}
-            urlProyecto={proyecto.url_proyecto}
-            urlGithub={proyecto.url_githud}
             data-titulo={proyecto.titulo?.toLowerCase()}
             data-descripcion={proyecto.descripcion?.toLowerCase()}
             data-categorias={cats.join(",").toLowerCase()}
