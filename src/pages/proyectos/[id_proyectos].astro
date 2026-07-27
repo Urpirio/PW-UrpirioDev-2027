@@ -1,7 +1,31 @@
 ---
 import LayoutAstroComponent from "../../layouts/Layout.astro";
+import SectionDetalleProyecto from "../../components/proyectos/cp/section-detalle-proyecto.astro";
+import SectionRelacionados from "../../components/proyectos/cp/section-relacionados.astro";
+import SectionCtaAgencia from "../../components/inicio/cp/section-cta-agencia.astro";
+import { Fetch } from "../../lib/Fetch-Public-Informacion";
+import type { tp_proyectos, object_proyecto } from "../../components/proyectos/types/tp-proyectos";
+
+export async function getStaticPaths() {
+  const data: tp_proyectos = await Fetch({
+    pathname: "/api/proyectos?populate=*",
+  });
+  const proyectos = data?.data ?? [];
+
+  return proyectos.map((proyecto) => ({
+    params: { id_proyectos: proyecto.documentId },
+    props: { proyecto, proyectos },
+  }));
+}
+
+const { proyecto, proyectos } = Astro.props as {
+  proyecto: object_proyecto;
+  proyectos: object_proyecto[];
+};
 ---
 
 <LayoutAstroComponent>
-    
+  <SectionDetalleProyecto proyecto={proyecto} />
+  <SectionRelacionados proyectos={proyectos} actual={proyecto} />
+  <SectionCtaAgencia variant="outline" />
 </LayoutAstroComponent>
