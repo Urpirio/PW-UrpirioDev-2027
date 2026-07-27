@@ -2,9 +2,11 @@ interface tp_Fetch {
   pathname: string;
 }
 
+export const API_URL = "https://pw-urpiriodev-cms-2027-production.up.railway.app";
+
 export const Fetch = async ({ pathname }: tp_Fetch) => {
   const respuesta = await fetch(
-    `https://pw-urpiriodev-cms-2027-production.up.railway.app${pathname}`,
+    `${API_URL}${pathname}`,
     {
       method: "GET",
       headers: {
