@@ -1,0 +1,193 @@
+---
+import { Icon } from "astro-icon/components";
+import CardBlog from "../../share-ui/CardBlog.astro";
+import { Fetch, API_URL } from "../../../lib/Fetch-Public-Informacion";
+import type { tp_blogs } from "../types/tp-blog";
+
+const data: tp_blogs = await Fetch({ pathname: "/api/blogs?populate=*" });
+const posts = data?.data ?? [];
+
+const categorias = [
+  ...new Set(
+    posts.flatMap((p) => (p.categoria_blogs ?? []).map((c) => c.nombre)),
+  ),
+] as string[];
+
+const formatearFecha = (fecha?: string) =>
+  fecha
+    ? new Intl.DateTimeFormat("es-DO", { dateStyle: "long" }).format(
+        new Date(fecha),
+      )
+    : undefined;
+
+const tiempoLectura = (texto?: string) => {
+  if (!texto) return undefined;
+  const palabras = texto.trim().split(/\s+/).length;
+  return `${Math.max(1, Math.ceil(palabras / 200))} min de lectura`;
+};
+---
+
+<section class="relative overflow-hidden px-6 py-20 sm:px-10 sm:py-24">
+  <!-- Fondos decorativos -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute left-1/2 top-0 h-100 w-100 -translate-x-1/2 rounded-full bg-linear-to-b from-[#38b000]/12 to-transparent blur-3xl"></div>
+    <div class="absolute right-1/4 top-1/2 h-72 w-72 rounded-full bg-linear-to-t from-[#38b000]/6 to-transparent blur-3xl"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl">
+    <!-- Encabezado -->
+    <div class="text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#38b000]">
+        <Icon name="lucide:newspaper" class="h-3.5 w-3.5" />
+        Blog
+      </span>
+      <h1 class="mt-5 text-balance text-4xl font-black tracking-tight text-neutral-900 sm:text-5xl">
+        Notas y <span class="text-[#38b000]">aprendizajes</span>
+      </h1>
+      <p class="mx-auto mt-4 max-w-lg text-base text-neutral-600">
+        Ideas, aprendizajes y notas técnicas sobre desarrollo web, IA y todo lo
+        que voy descubriendo en el camino.
+      </p>
+    </div>
+
+    <!-- Buscador + Filtro de categorías -->
+    <div class="mx-auto mt-10 max-w-3xl">
+      <div class="relative">
+        <Icon name="lucide:search" class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+        <input
+          id="buscador-blog"
+          type="text"
+          placeholder="Buscar por título o contenido..."
+          class="w-full rounded-full border border-neutral-300 bg-white py-3 pl-11 pr-4 text-sm text-neutral-900 shadow-sm transition-all focus:border-[#38b000] focus:outline-none focus:ring-2 focus:ring-[#38b000]/20"
+        />
+      </div>
+
+      {categorias.length > 0 && (
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            data-categoria="todos"
+            class="filtro-cat rounded-full border border-[#38b000] bg-[#38b000] px-4 py-1.5 text-xs font-semibold text-white transition-all"
+            aria-pressed="true"
+          >
+            Todos
+          </button>
+          {categorias.map((cat) => (
+            <button
+              type="button"
+              data-categoria={cat.toLowerCase()}
+              class="filtro-cat rounded-full border border-neutral-300 bg-white px-4 py-1.5 text-xs font-semibold text-neutral-700 transition-all hover:border-[#38b000] hover:text-[#38b000]"
+              aria-pressed="false"
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <!-- Estado sin resultados (filtros) -->
+    <div
+      id="sin-resultados"
+      class="mx-auto mt-10 hidden max-w-xl flex-col items-center rounded-3xl border border-dashed border-neutral-300 bg-neutral-50/60 px-6 py-14 text-center"
+    >
+      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#38b000]/10 text-[#38b000]">
+        <Icon name="lucide:search-x" class="h-6 w-6" />
+      </div>
+      <p class="mt-4 font-semibold text-neutral-900">Sin coincidencias</p>
+      <p class="mt-1 text-sm text-neutral-500">
+        No hay publicaciones con los filtros seleccionados.
+      </p>
+    </div>
+
+    <!-- Estado vacío (sin publicaciones) -->
+    {posts.length === 0 && (
+      <div class="mx-auto mt-10 flex max-w-xl flex-col items-center rounded-3xl border border-dashed border-neutral-300 bg-neutral-50/60 px-6 py-16 text-center">
+        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#38b000]/10 text-[#38b000]">
+          <Icon name="lucide:pen-line" class="h-7 w-7" />
+        </div>
+        <p class="mt-5 text-lg font-semibold text-neutral-900">Aún no hay publicaciones</p>
+        <p class="mt-1 max-w-sm text-sm text-neutral-500">
+          Estoy preparando los primeros artículos. Vuelve pronto por aquí.
+        </p>
+      </div>
+    )}
+
+    <!-- Grid -->
+    <div id="lista-blog" class="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => {
+        const cats = (post.categoria_blogs ?? []).map((c) => c.nombre);
+        const imagen = post.documentos?.[0];
+        return (
+          <CardBlog
+            class="blog-item"
+            titulo={post.titulo}
+            resumen={post.resumen ?? post.contenido}
+            categoria={cats[0]}
+            imagen={imagen ? `${API_URL}${imagen.url}` : undefined}
+            fecha={formatearFecha(post.publishedAt)}
+            tiempoLectura={tiempoLectura(post.contenido)}
+            href={`/blog/${post.documentId}`}
+            data-titulo={post.titulo?.toLowerCase()}
+            data-contenido={post.contenido?.toLowerCase()}
+            data-categorias={cats.join(",").toLowerCase()}
+          />
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<script>
+  const buscador = document.querySelector<HTMLInputElement>("#buscador-blog");
+  const items = document.querySelectorAll<HTMLElement>(".blog-item");
+  const sinResultados = document.querySelector<HTMLElement>("#sin-resultados");
+  const chips = document.querySelectorAll<HTMLButtonElement>(".filtro-cat");
+
+  let categoriaActiva = "todos";
+
+  const activarChip = (activo: HTMLButtonElement) => {
+    chips.forEach((chip) => {
+      const esActivo = chip === activo;
+      chip.setAttribute("aria-pressed", String(esActivo));
+      chip.classList.toggle("border-[#38b000]", esActivo);
+      chip.classList.toggle("bg-[#38b000]", esActivo);
+      chip.classList.toggle("text-white", esActivo);
+      chip.classList.toggle("border-neutral-300", !esActivo);
+      chip.classList.toggle("bg-white", !esActivo);
+      chip.classList.toggle("text-neutral-700", !esActivo);
+    });
+  };
+
+  const filtrar = () => {
+    const texto = buscador?.value.trim().toLowerCase() ?? "";
+    let visibles = 0;
+
+    items.forEach((item) => {
+      const titulo = item.dataset.titulo ?? "";
+      const contenido = item.dataset.contenido ?? "";
+      const categorias = item.dataset.categorias ?? "";
+
+      const coincideTexto =
+        !texto || titulo.includes(texto) || contenido.includes(texto);
+      const coincideCategoria =
+        categoriaActiva === "todos" ||
+        categorias.split(",").includes(categoriaActiva);
+
+      const visible = coincideTexto && coincideCategoria;
+      item.classList.toggle("hidden", !visible);
+      if (visible) visibles++;
+    });
+
+    sinResultados?.classList.toggle("hidden", visibles !== 0 || items.length === 0);
+  };
+
+  buscador?.addEventListener("input", filtrar);
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      categoriaActiva = chip.dataset.categoria ?? "todos";
+      activarChip(chip);
+      filtrar();
+    });
+  });
+</script>
