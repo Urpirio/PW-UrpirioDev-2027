@@ -11,7 +11,7 @@ const Header = [
     herf: "/proyectos",
   },
   {
-    titulo: "Sobre mi",
+    titulo: "Sobre mí",
     herf: "/sobre-me",
   },
   {
@@ -28,43 +28,46 @@ const isActive = (herf: string) =>
 <header
   class="fixed top-5 inset-x-0 z-50 flex flex-col items-center gap-3 justify-center px-4"
 >
+  <div
+    id="nav-backdrop"
+    class="fixed inset-0 -z-10 hidden bg-neutral-950/25 backdrop-blur-md transition-opacity sm:hidden"
+  >
+  </div>
+
   <nav
     id="floating-nav"
-    class="relative z-50 flex w-full items-center justify-between gap-3 rounded-full border border-white/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6))] px-3 py-2 backdrop-blur-[22px] backdrop-saturate-[1.9] shadow-[0_12px_40px_-8px_rgba(31,38,135,0.25)] sm:w-auto sm:gap-1 sm:px-2 dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(0,0,0,0.7),rgba(0,0,0,0.45))]"
+    class="relative z-50 flex w-full items-center justify-between gap-3 rounded-full border border-neutral-200/90 bg-white/80 px-4 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-all duration-300 ring-1 ring-black/5 sm:w-auto sm:gap-6 sm:pl-5 sm:pr-3"
   >
+    <!-- Logo con Status Badge -->
     <a
       href="/"
-      class="relative z-10 pl-2 text-base font-black tracking-tight text-[#38b000] sm:hidden"
+      class="group relative z-10 flex items-center gap-2 text-sm font-black tracking-tight text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
     >
-      urpirio<span class="text-neutral-800 dark:text-neutral-100">.dev</span>
+      <span>urpirio<span class="text-[#38b000]">.dev</span></span>
     </a>
 
-    <button
-      id="menu-toggle"
-      type="button"
-      aria-expanded="false"
-      aria-controls="nav-links"
-      aria-label="Abrir menú"
-      class="relative z-10 flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 sm:hidden dark:text-neutral-100"
-    >
-      <Icon name="lucide:menu" id="menu-icon-open" class="h-5 w-5" />
-      <Icon name="lucide:x" id="menu-icon-close" class="hidden h-5 w-5" />
-    </button>
-
+    <!-- Nav Items (Desktop / Mobile Dropdown) -->
     <div
       id="nav-links"
-      class="absolute top-[calc(100%+0.75rem)] left-1/2 hidden w-80 -translate-x-1/2 flex-col gap-1 rounded-3xl border border-white/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78))]  backdrop-blur-[22px] backdrop-saturate-[1.9] shadow-[0_12px_40px_-8px_rgba(31,38,135,0.25)] sm:static sm:flex sm:w-auto sm:max-w-none sm:translate-x-0 sm:flex-row sm:items-center sm:border-0 sm:bg-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(0,0,0,0.88),rgba(0,0,0,0.68))]"
+      class="absolute top-[calc(100%+0.75rem)] left-1/2 hidden w-[calc(100vw-2rem)] max-w-xs -translate-x-1/2 flex-col gap-1 rounded-2xl border border-neutral-200/90 bg-white/95 p-2 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-2xl sm:static sm:flex sm:w-auto sm:max-w-none sm:translate-x-0 sm:flex-row sm:items-center sm:gap-1 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none"
     >
+      <span
+        id="nav-indicator"
+        aria-hidden="true"
+        class="pointer-events-none absolute left-0 top-0 z-0 hidden rounded-full bg-gradient-to-r from-[#38b000] to-[#2d8d00] opacity-0 shadow-[0_4px_14px_rgba(56,176,0,0.35)] sm:block"
+      >
+      </span>
       {
         Header.map((e) => (
           <a
             href={e.herf}
+            data-active={isActive(e.herf) ? "true" : undefined}
             aria-current={isActive(e.herf) ? "page" : undefined}
             class:list={[
-              "nav-link relative z-10 rounded-full px-4 my-2 mx-2 py-2 text-sm font-medium whitespace-nowrap",
+              "nav-link relative z-10 rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#38b000] focus-visible:outline-none text-neutral-600 hover:text-neutral-900 sm:hover:bg-transparent",
               isActive(e.herf)
-                ? "bg-[#38b000] text-white shadow-sm"
-                : "text-neutral-800 hover:bg-white/30 dark:text-neutral-100 dark:hover:bg-white/10",
+                ? "bg-gradient-to-r from-[#38b000] to-[#2d8d00] text-white shadow-md shadow-[#38b000]/20 sm:bg-none sm:shadow-none sm:text-neutral-600"
+                : "hover:bg-neutral-100/80",
             ]}
           >
             {e.titulo}
@@ -72,20 +75,98 @@ const isActive = (herf: string) =>
         ))
       }
     </div>
+
+    <!-- Mobile Toggle Button -->
+    <button
+      id="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-links"
+      aria-label="Abrir menú"
+      class="relative z-10 flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-100/60 text-neutral-800 transition-all hover:bg-neutral-200/80 hover:scale-105 focus-visible:ring-2 focus-visible:ring-[#38b000] focus-visible:outline-none sm:hidden"
+    >
+      <Icon name="lucide:menu" id="menu-icon-open" class="h-4.5 w-4.5" />
+      <Icon name="lucide:x" id="menu-icon-close" class="hidden h-4.5 w-4.5" />
+    </button>
   </nav>
 </header>
 
+<style>
+  @media (min-width: 640px) {
+    .nav-link-on-indicator {
+      color: white !important;
+    }
+  }
+</style>
+
 <script>
-  import { animate, scroll } from "motion";
+  import { animate, scroll, stagger } from "motion";
 
   const nav = document.querySelector<HTMLElement>("#floating-nav");
 
   const menu_toggle = document.getElementById("menu-toggle");
   const nav_links = document.getElementById("nav-links");
   const nav_backdrop = document.getElementById("nav-backdrop");
+  const nav_indicator = document.getElementById("nav-indicator");
   const menu_icon_open = document.getElementById("menu-icon-open");
   const menu_icon_close = document.getElementById("menu-icon-close");
 
+  const links = Array.from(
+    nav?.querySelectorAll<HTMLAnchorElement>(".nav-link") ?? [],
+  );
+  const activeLink = links.find((l) => l.dataset.active === "true") ?? links[0];
+
+  const isDesktop = () => window.matchMedia("(min-width: 640px)").matches;
+
+  /* ---- Indicador deslizante (magic pill) — solo desktop ---- */
+  let indicatorReady = false;
+
+  const setHighlight = (link: HTMLElement | undefined) => {
+    links.forEach((l) =>
+      l.classList.toggle("nav-link-on-indicator", l === link),
+    );
+  };
+
+  const moveIndicator = (link: HTMLElement | undefined, animated = true) => {
+    if (!nav_indicator || !link || !isDesktop()) return;
+
+    const props = {
+      left: `${link.offsetLeft}px`,
+      top: `${link.offsetTop}px`,
+      width: `${link.offsetWidth}px`,
+      height: `${link.offsetHeight}px`,
+      opacity: 1,
+    };
+
+    animate(nav_indicator, props, {
+      duration: indicatorReady && animated ? 0.35 : 0,
+      ease: [0.22, 1, 0.36, 1],
+    });
+
+    setHighlight(link);
+    indicatorReady = true;
+  };
+
+  const resetIndicator = () => moveIndicator(activeLink);
+
+  if (isDesktop()) requestAnimationFrame(resetIndicator);
+
+  links.forEach((link) => {
+    link.addEventListener("mouseenter", () => moveIndicator(link));
+    link.addEventListener("focus", () => moveIndicator(link));
+  });
+  nav_links?.addEventListener("mouseleave", resetIndicator);
+
+  window.addEventListener("resize", () => {
+    if (isDesktop()) {
+      indicatorReady = false;
+      resetIndicator();
+    } else if (nav_indicator) {
+      nav_indicator.style.opacity = "0";
+    }
+  });
+
+  /* ---- Entrada + scroll ---- */
   if (nav) {
     animate(
       nav,
@@ -96,23 +177,30 @@ const isActive = (herf: string) =>
     scroll(
       animate(nav, {
         boxShadow: [
-          "0 12px 40px -8px rgba(31,38,135,0.2)",
-          "0 20px 55px -8px rgba(31,38,135,0.4)",
+          "0 8px 30px rgba(0,0,0,0.06)",
+          "0 12px 35px rgba(56,176,0,0.18)",
         ],
       }),
       { target: document.documentElement, offset: ["0px", "320px"] },
     );
 
-    nav.querySelectorAll<HTMLElement>(".nav-link").forEach((link) => {
-      link.addEventListener("mouseenter", () =>
-        animate(link, { scale: 1.06 }, { duration: 0.25, ease: "easeOut" }),
-      );
-      link.addEventListener("mouseleave", () =>
-        animate(link, { scale: 1 }, { duration: 0.25, ease: "easeOut" }),
-      );
-    });
+    // Compacta el nav al hacer scroll
+    let compact = false;
+    window.addEventListener(
+      "scroll",
+      () => {
+        const shouldCompact = window.scrollY > 40;
+        if (shouldCompact === compact) return;
+        compact = shouldCompact;
+        nav.classList.toggle("sm:py-1.5", compact);
+        nav.classList.toggle("sm:py-2", !compact);
+        if (isDesktop()) requestAnimationFrame(resetIndicator);
+      },
+      { passive: true },
+    );
   }
 
+  /* ---- Menú móvil ---- */
   const openMenu = () => {
     nav_links?.classList.remove("hidden");
     nav_links?.classList.add("flex");
@@ -120,6 +208,31 @@ const isActive = (herf: string) =>
     menu_icon_open?.classList.add("hidden");
     menu_icon_close?.classList.remove("hidden");
     menu_toggle?.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+
+    if (!isDesktop()) {
+      if (nav_links) {
+        animate(
+          nav_links,
+          { opacity: [0, 1], y: [-12, 0], filter: ["blur(6px)", "blur(0px)"] },
+          { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+        );
+      }
+      if (links.length) {
+        animate(
+          links,
+          { opacity: [0, 1], y: [-8, 0] },
+          {
+            duration: 0.3,
+            delay: stagger(0.06, { startDelay: 0.08 }),
+            ease: [0.22, 1, 0.36, 1],
+          },
+        );
+      }
+    }
+    if (nav_backdrop) {
+      animate(nav_backdrop, { opacity: [0, 1] }, { duration: 0.3 });
+    }
   };
 
   const closeMenu = () => {
@@ -129,6 +242,7 @@ const isActive = (herf: string) =>
     menu_icon_open?.classList.remove("hidden");
     menu_icon_close?.classList.add("hidden");
     menu_toggle?.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
   };
 
   menu_toggle?.addEventListener("click", () => {
@@ -150,4 +264,10 @@ const isActive = (herf: string) =>
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeMenu();
   });
+
+  window
+    .matchMedia("(min-width: 640px)")
+    .addEventListener("change", (event) => {
+      if (event.matches) closeMenu();
+    });
 </script>
