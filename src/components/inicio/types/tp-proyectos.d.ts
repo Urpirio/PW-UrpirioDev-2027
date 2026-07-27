@@ -22,6 +22,7 @@ export type tp_section_proyecto = {
     subtitulo: string;
     proyectos: {
       id: number;
+      documentId: string;
       titulo: string;
       subtitulo: string;
       descripcion: string;
