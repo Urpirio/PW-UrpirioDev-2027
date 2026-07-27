@@ -2,19 +2,21 @@ interface tp_Fetch {
   pathname: string;
 }
 
-export const API_URL = "https://pw-urpiriodev-cms-2027-production.up.railway.app";
+// TEMPORAL: apuntando al Strapi local mientras section-hero/section-about-me
+// no estén desplegados en producción. Antes de publicar, revertir a:
+// export const API_URL = "https://pw-urpiriodev-cms-2027-production.up.railway.app";
+export const API_URL = "http://localhost:1337";
+
+// Definido en .env (no versionado). Ver .env.example.
+const API_TOKEN = import.meta.env.STRAPI_API_TOKEN;
 
 export const Fetch = async ({ pathname }: tp_Fetch) => {
-  const respuesta = await fetch(
-    `${API_URL}${pathname}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization:
-          "bearer 1597b15f2b729109e701a14127532e4211b59b83ad611bfe8e5dd616d7f12e07962f5df76bb3cc0f036f8c4ecee266c60af589cdbdb0f18dcc013b27ba3919e539b69be5df115872dfcf65fb1ef0aa3d24b104cd2309d521933174d95bebffd5e759c1484da517913a95396021cc81c1423ae7339e224251a33fd324bfe58a4d",
-      },
+  const respuesta = await fetch(`${API_URL}${pathname}`, {
+    method: "GET",
+    headers: {
+      Authorization: `bearer ${API_TOKEN}`,
     },
-  );
+  });
 
   return await respuesta.json();
 };
