@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import CardProyecto from "../../share-ui/CardProyecto.astro";
 import { API_URL } from "../../../lib/Fetch-Public-Informacion";
+import { getImagenProyecto } from "../lib/proyecto-utils";
 import type { object_proyecto } from "../types/tp-proyectos";
 
 interface Props {
@@ -25,7 +26,7 @@ const relacionados = [
 ---
 
 {relacionados.length > 0 && (
-  <section class="relative mx-auto max-w-5xl px-6 pt-4 sm:px-10">
+  <section class="relative mx-auto max-w-6xl  pt-4 ">
     <div class="border-t border-neutral-200 pt-12">
       <div class="flex items-end justify-between gap-4">
         <div>
@@ -48,7 +49,7 @@ const relacionados = [
 
       <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {relacionados.map((rel) => {
-          const imagen = rel.documentos?.[0];
+          const imagen = getImagenProyecto(rel);
           return (
             <CardProyecto
               titulo={rel.titulo}
