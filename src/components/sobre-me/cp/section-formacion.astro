@@ -1,0 +1,143 @@
+---
+import { Icon } from "astro-icon/components";
+
+const formacion = [
+  {
+    titulo: "Ingeniería de Software",
+    lugar: "Universidad Dominicano Americana",
+    periodo: "Sep 2022 — Presente",
+  },
+  {
+    titulo: "Técnico de programación de alto impacto",
+    lugar: "Semillero Digital Intro",
+    periodo: "Sep 2024 — Mar 2025",
+  },
+  {
+    titulo: "Diploma en Matemáticas: Ciencia, Tecnología e Ingeniería",
+    lugar: "Alison",
+    periodo: "Ene — Abr 2024",
+  },
+  {
+    titulo: "Diploma in Information Technology Support",
+    lugar: "Alison",
+    periodo: "Ene — Mar 2024",
+  },
+  {
+    titulo: "Programa de Inmersión en Inglés (MESCYT)",
+    lugar: "Escuela de Idiomas Dominicana Americana",
+    periodo: "Ene — Nov 2023",
+  },
+];
+
+const certificados = [
+  {
+    titulo: "Planificación estratégica en la gestión pública",
+    lugar: "INAP",
+    periodo: "Oct 2025",
+  },
+  {
+    titulo: "Diseño, implementación y evaluación de proyectos",
+    lugar: "INAP",
+    periodo: "Nov 2025",
+  },
+  {
+    titulo: "ISO/IEC 27001 — Seguridad de la Información (SGSI)",
+    lugar: "Alison",
+    periodo: "Mar 2024",
+  },
+  {
+    titulo: "Introducción a la programación en C#",
+    lugar: "Alison",
+    periodo: "May 2024",
+  },
+  {
+    titulo: "Introducción a la inteligencia empresarial",
+    lugar: "Alison",
+    periodo: "Abr 2024",
+  },
+  {
+    titulo: "Introducción a la ciencia de datos",
+    lugar: "Alison",
+    periodo: "Abr 2024",
+  },
+];
+
+const columnas = [
+  { icon: "lucide:graduation-cap", titulo: "Formación", items: formacion },
+  { icon: "lucide:award", titulo: "Certificados", items: certificados },
+];
+---
+
+<section class="relative overflow-hidden bg-white px-6 py-24 text-neutral-900 sm:px-10 sm:py-28">
+  <div class="pointer-events-none absolute inset-0 z-0">
+    <div class="absolute right-1/4 top-0 h-96 w-96 rounded-full bg-linear-to-b from-[#38b000]/10 to-transparent blur-3xl"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-5xl">
+    <div class="text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#38b000]">
+        <Icon name="lucide:book-marked" class="h-3.5 w-3.5" />
+        Aprendizaje
+      </span>
+      <h2 class="mt-6 text-balance text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">
+        Formación y certificados
+      </h2>
+    </div>
+
+    <div class="mt-14 grid grid-cols-1 gap-8 lg:grid-cols-2">
+      {
+        columnas.map((col) => (
+          <div>
+            <div class="mb-6 flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#38b000]/10 text-[#38b000]">
+                <Icon name={col.icon} class="h-5 w-5" />
+              </div>
+              <h3 class="text-xl font-bold text-neutral-900">{col.titulo}</h3>
+            </div>
+            <div class="space-y-3">
+              {col.items.map((item) => (
+                <div class="rounded-2xl border border-neutral-200 bg-neutral-50/50 p-5 transition-all duration-300 hover:border-[#38b000]/40 hover:bg-white hover:shadow-md">
+                  <div class="flex items-start justify-between gap-3">
+                    <h4 class="text-sm font-semibold leading-snug text-neutral-900">
+                      {item.titulo}
+                    </h4>
+                    <span class="whitespace-nowrap text-xs text-neutral-500">
+                      {item.periodo}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-xs text-[#38b000]">{item.lugar}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-16 flex flex-col items-center gap-4 rounded-3xl border border-neutral-200 bg-neutral-50/60 p-10 text-center shadow-sm">
+      <h3 class="text-2xl font-bold text-neutral-900 sm:text-3xl">
+        ¿Construimos algo juntos?
+      </h3>
+      <p class="max-w-md text-neutral-600">
+        Si tienes una idea o proyecto en mente, me encantaría escucharlo.
+      </p>
+      <div class="mt-2 flex flex-wrap justify-center gap-3">
+        <a
+          href="mailto:UrpirioJunior@gmail.com"
+          class="group inline-flex items-center gap-2 rounded-full bg-linear-to-r from-[#38b000] to-[#2d8d00] px-7 py-3.5 font-semibold text-white shadow-lg shadow-[#38b000]/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#38b000]/30"
+        >
+          <Icon name="lucide:mail" class="h-4 w-4" />
+          Contáctame
+        </a>
+        <a
+          href="/proyectos"
+          class="inline-flex items-center gap-2 rounded-full border border-neutral-300 px-7 py-3.5 font-semibold text-neutral-800 transition-all duration-300 hover:border-[#38b000] hover:text-[#38b000]"
+        >
+          Ver mis proyectos
+          <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
