@@ -1,0 +1,65 @@
+---
+import { Icon } from "astro-icon/components";
+import CardProyecto from "../../share-ui/CardProyecto.astro";
+import { API_URL } from "../../../lib/Fetch-Public-Informacion";
+import type { object_proyecto } from "../types/tp-proyectos";
+
+interface Props {
+  proyectos: object_proyecto[];
+  actual: object_proyecto;
+}
+
+const { proyectos, actual } = Astro.props;
+
+const categoriasActual = new Set(
+  (actual.categoria_proyectos ?? []).map((c) => c.nombre),
+);
+
+const comparten = (p: object_proyecto) =>
+  (p.categoria_proyectos ?? []).some((c) => categoriasActual.has(c.nombre));
+
+const relacionados = [
+  ...proyectos.filter((p) => p.documentId !== actual.documentId && comparten(p)),
+  ...proyectos.filter((p) => p.documentId !== actual.documentId && !comparten(p)),
+].slice(0, 3);
+---
+
+{relacionados.length > 0 && (
+  <section class="relative mx-auto max-w-5xl px-6 pt-4 sm:px-10">
+    <div class="border-t border-neutral-200 pt-12">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#38b000]">
+            <Icon name="lucide:layers" class="h-3.5 w-3.5" />
+            Relacionados
+          </span>
+          <h2 class="mt-4 text-2xl font-black tracking-tight text-neutral-900 sm:text-3xl">
+            Más proyectos como este
+          </h2>
+        </div>
+        <a
+          href="/proyectos"
+          class="group hidden shrink-0 items-center gap-1.5 text-sm font-semibold text-neutral-600 transition-colors hover:text-[#38b000] sm:inline-flex"
+        >
+          Ver todos
+          <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+        </a>
+      </div>
+
+      <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {relacionados.map((rel) => {
+          const imagen = rel.documentos?.[0];
+          return (
+            <CardProyecto
+              titulo={rel.titulo}
+              descripcion={rel.subtitulo || rel.descripcion}
+              categoria={rel.categoria_proyectos?.[0]?.nombre}
+              imagen={imagen ? `${API_URL}${imagen.url}` : undefined}
+              href={`/proyectos/${rel.documentId}`}
+            />
+          );
+        })}
+      </div>
+    </div>
+  </section>
+)}
