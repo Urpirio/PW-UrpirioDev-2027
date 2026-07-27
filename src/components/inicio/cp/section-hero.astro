@@ -4,31 +4,45 @@ import { Icon } from "astro-icon/components";
 import Urpiriodev from "../../../assets/foto_sin_fondo.png";
 import Kakashi from "../../../assets/kakashi_armadura_sin_fondo.png";
 import { Fetch } from "../../../lib/Fetch-Public-Informacion";
-import type { tp_hero } from "../types/tp-hero";
+import type { tp_hero, tp_red_social } from "../types/tp-hero";
 
-const redes = [
-  {
-    titulo: "GitHub",
-    href: "https://github.com/urpiriojunior",
+// Iconos + posiciones fijas del arreglo flotante y URL de respaldo por si el
+// campo "url" aún no se ha llenado en el CMS (viene null por defecto).
+const REDES_CONFIG: Record<
+  string,
+  { icon: string; top: string; left: string; fallbackHref?: string }
+> = {
+  github: {
     icon: "simple-icons:github",
     top: "8%",
     left: "-4%",
+    fallbackHref: "https://github.com/Urpirio",
   },
-  {
-    titulo: "LinkedIn",
-    href: "https://linkedin.com",
+  githud: {
+    icon: "simple-icons:github",
+    top: "8%",
+    left: "-4%",
+    fallbackHref: "https://github.com/Urpirio",
+  },
+  linkedin: {
     icon: "simple-icons:linkedin",
     top: "60%",
     left: "-6%",
+    fallbackHref:
+      "https://do.linkedin.com/in/urpiriojunior-moreno-vargas-95294b269",
   },
-  {
-    titulo: "Instagram",
-    href: "https://instagram.com",
+  instagram: {
     icon: "simple-icons:instagram",
     top: "78%",
     left: "92%",
   },
-];
+  email: {
+    icon: "lucide:mail",
+    top: "30%",
+    left: "96%",
+    fallbackHref: "mailto:UrpirioJunior@gmail.com",
+  },
+};
 
 const stack = [
   { nombre: "Astro", icon: "simple-icons:astro" },
@@ -40,9 +54,29 @@ const stack = [
 
 const checklist = ["Amante del anime", "Adicto al café", "Siempre aprendiendo"];
 
-const data: tp_hero = await Fetch({ pathname: "/api/section-hero" });
+const data: tp_hero = await Fetch({
+  pathname: "/api/section-hero?populate=*",
+});
+
+const hero = data?.data;
+const mostrarSeccion = hero?.Show_section ?? true;
+
+const subtitulo =
+  hero?.descripcion ??
+  "Desarrollador web al que le apasiona construir cosas limpias y bien hechas. Aquí comparto mis proyectos, lo que voy aprendiendo y un poco de quién soy.";
+
+const redes = (hero?.redes_sociales ?? [])
+  .map((red: tp_red_social) => {
+    const config = REDES_CONFIG[red.name?.toLowerCase()?.trim()];
+    if (!config) return null;
+    const href = red.url?.trim() || config.fallbackHref;
+    if (!href) return null;
+    return { titulo: red.name, href, ...config };
+  })
+  .filter((red): red is NonNullable<typeof red> => red !== null);
 ---
 
+{mostrarSeccion && (
 <section class="relative overflow-hidden px-6 py-14 sm:px-10 lg:py-20">
   <!-- Fondos decorativos -->
   <div class="pointer-events-none absolute inset-0 -z-10">
@@ -77,9 +111,7 @@ const data: tp_hero = await Fetch({ pathname: "/api/section-hero" });
       <p
         class="hero-subtitle mx-auto mt-6 max-w-lg text-base leading-relaxed text-neutral-500 opacity-0 lg:mx-0 sm:text-lg"
       >
-        Desarrollador web al que le apasiona construir cosas limpias y bien
-        hechas. Aquí comparto mis proyectos, lo que voy aprendiendo y un poco de
-        quién soy.
+        {subtitulo}
       </p>
 
       <div
@@ -229,6 +261,7 @@ const data: tp_hero = await Fetch({ pathname: "/api/section-hero" });
     </div>
   </div>
 </section>
+)}
 <script>
   import { animate, stagger } from "motion";
 
