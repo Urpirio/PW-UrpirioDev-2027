@@ -1,6 +1,7 @@
 ---
 import LayoutAstroComponent from "../../layouts/Layout.astro";
 import SectionDetalleProyecto from "../../components/proyectos/cp-[id]/section-detalle-proyecto.astro";
+import SectionCtaProyecto from "../../components/proyectos/cp-[id]/section-cta-proyecto.astro";
 import SectionRelacionados from "../../components/proyectos/cp/section-relacionados.astro";
 import CTAAgencia from "../../components/share-ui/CTAAgencia.astro";
 import { Fetch } from "../../lib/Fetch-Public-Informacion";
@@ -27,5 +28,9 @@ const { proyecto, proyectos } = Astro.props as {
 <LayoutAstroComponent>
   <SectionDetalleProyecto proyecto={proyecto} />
   <SectionRelacionados proyectos={proyectos} actual={proyecto} />
-  <CTAAgencia variant="outline" />
+  {proyecto.cta ? (
+    <SectionCtaProyecto cta={proyecto.cta} />
+  ) : (
+    <CTAAgencia variant="outline" />
+  )}
 </LayoutAstroComponent>
