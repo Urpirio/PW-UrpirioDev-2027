@@ -1,47 +1,16 @@
 ---
-import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
-import Urpiriodev from "../../../assets/foto_sin_fondo.png";
-import Kakashi from "../../../assets/kakashi_armadura_sin_fondo.png";
-import { Fetch } from "../../../lib/Fetch-Public-Informacion";
-import type { tp_hero, tp_red_social } from "../types/tp-hero";
+import { API_URL, Fetch } from "../../../lib/Fetch-Public-Informacion";
+import { resolverRedes } from "../../../lib/redes-sociales";
+import type { tp_hero } from "../types/tp-hero";
 
-// Iconos + posiciones fijas del arreglo flotante y URL de respaldo por si el
-// campo "url" aún no se ha llenado en el CMS (viene null por defecto).
-const REDES_CONFIG: Record<
-  string,
-  { icon: string; top: string; left: string; fallbackHref?: string }
-> = {
-  github: {
-    icon: "simple-icons:github",
-    top: "8%",
-    left: "-4%",
-    fallbackHref: "https://github.com/Urpirio",
-  },
-  githud: {
-    icon: "simple-icons:github",
-    top: "8%",
-    left: "-4%",
-    fallbackHref: "https://github.com/Urpirio",
-  },
-  linkedin: {
-    icon: "simple-icons:linkedin",
-    top: "60%",
-    left: "-6%",
-    fallbackHref:
-      "https://do.linkedin.com/in/urpiriojunior-moreno-vargas-95294b269",
-  },
-  instagram: {
-    icon: "simple-icons:instagram",
-    top: "78%",
-    left: "92%",
-  },
-  email: {
-    icon: "lucide:mail",
-    top: "30%",
-    left: "96%",
-    fallbackHref: "mailto:UrpirioJunior@gmail.com",
-  },
+// Posición del arreglo flotante de cada red (solo relevante en el hero).
+const POSICIONES: Record<string, { top: string; left: string }> = {
+  github: { top: "8%", left: "-4%" },
+  githud: { top: "8%", left: "-4%" },
+  linkedin: { top: "60%", left: "-6%" },
+  instagram: { top: "78%", left: "92%" },
+  email: { top: "30%", left: "96%" },
 };
 
 const stack = [
@@ -65,15 +34,14 @@ const subtitulo =
   hero?.descripcion ??
   "Desarrollador web al que le apasiona construir cosas limpias y bien hechas. Aquí comparto mis proyectos, lo que voy aprendiendo y un poco de quién soy.";
 
-const redes = (hero?.redes_sociales ?? [])
-  .map((red: tp_red_social) => {
-    const config = REDES_CONFIG[red.name?.toLowerCase()?.trim()];
-    if (!config) return null;
-    const href = red.url?.trim() || config.fallbackHref;
-    if (!href) return null;
-    return { titulo: red.name, href, ...config };
-  })
-  .filter((red): red is NonNullable<typeof red> => red !== null);
+const redes = resolverRedes(hero?.redes_sociales).map((red) => ({
+  ...red,
+  ...(POSICIONES[red.titulo?.toLowerCase()?.trim()] ?? { top: "0%", left: "0%" }),
+}));
+
+const imagenesCms = hero?.images ?? [];
+const fotoUrl = imagenesCms[0]?.url ? `${API_URL}${imagenesCms[0].url}` : undefined;
+const fotoAltUrl = imagenesCms[1]?.url ? `${API_URL}${imagenesCms[1].url}` : undefined;
 ---
 
 {mostrarSeccion && (
@@ -196,50 +164,32 @@ const redes = (hero?.redes_sociales ?? [])
       <div
         class="group relative z-10 flex h-full w-full items-end justify-center"
       >
-        <Image
-          class="h-full w-auto object-contain object-bottom mask-b-from-85% mask-b-to-95% transition-opacity duration-300 group-hover:opacity-0"
-          src={Urpiriodev}
-          alt="Urpirio, desarrollador web"
-        />
-        <Image
-          class="absolute inset-0 mx-auto h-full w-auto object-contain object-bottom mask-b-from-85% mask-b-to-95% opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-          src={Kakashi}
-          alt="Urpirio como Kakashi"
-        />
+        {fotoUrl ? (
+          <>
+            <img
+              class:list={[
+                "h-full w-auto object-contain object-bottom mask-b-from-85% mask-b-to-95% transition-opacity duration-300",
+                fotoAltUrl && "group-hover:opacity-0",
+              ]}
+              src={fotoUrl}
+              alt={imagenesCms[0]?.alternativeText ?? "Urpirio, desarrollador web"}
+            />
+            {fotoAltUrl && (
+              <img
+                class="absolute inset-0 mx-auto h-full w-auto object-contain object-bottom mask-b-from-85% mask-b-to-95% opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                src={fotoAltUrl}
+                alt={imagenesCms[1]?.alternativeText ?? "Foto alterna"}
+              />
+            )}
+          </>
+        ) : (
+          // Placeholder: sin imágenes cargadas en el CMS
+          <div class="flex h-full w-full max-w-70 items-center justify-center rounded-[2.5rem] bg-linear-to-br from-[#38b000]/15 via-neutral-50 to-[#38b000]/5">
+            <span class="text-8xl font-black text-[#38b000]/25">U</span>
+          </div>
+        )}
       </div>
 
-      <!-- Tarjeta flotante -->
-      <div
-        class="hero-card absolute -right-2 top-6 z-20 w-52 rounded-2xl border border-black/5 bg-white/80 p-4 shadow-xl backdrop-blur-md opacity-0 sm:-right-6 dark:border-white/10 dark:bg-neutral-900/80"
-      >
-        <div class="flex items-center gap-3">
-          <div
-            class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#38b000]/10 text-[#38b000]"
-          >
-            <Icon name="lucide:sparkles" class="h-5 w-5" />
-          </div>
-          <div class="text-left">
-            <p
-              class="text-[10px] font-semibold uppercase tracking-wide text-neutral-400"
-            >
-              Fuera del código
-            </p>
-            <p class="text-sm font-bold text-neutral-900 dark:text-white">
-              Un poco de mí
-            </p>
-          </div>
-        </div>
-        <ul class="mt-3 space-y-2">
-          {
-            checklist.map((item) => (
-              <li class="flex items-center gap-2 text-xs font-medium text-neutral-600 dark:text-neutral-300">
-                <span class="h-1.5 w-1.5 rounded-full bg-[#38b000]" />
-                {item}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
 
       <!-- Iconos sociales flotantes -->
       <div class="pointer-events-none absolute inset-0 hidden sm:block">
