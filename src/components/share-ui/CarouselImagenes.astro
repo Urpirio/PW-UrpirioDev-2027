@@ -1,0 +1,133 @@
+---
+import { Icon } from "astro-icon/components";
+import { API_URL } from "../../lib/Fetch-Public-Informacion";
+
+interface Imagen {
+  url: string;
+  alternativeText: string | null;
+}
+
+interface Props {
+  imagenes: Imagen[];
+  alt: string;
+  /** Se muestra cuando no hay ninguna imagen. */
+  inicial?: string;
+}
+
+const { imagenes, alt, inicial = "P" } = Astro.props;
+const tieneVarias = imagenes.length > 1;
+---
+
+<div class="carousel-imagenes relative aspect-video w-full overflow-hidden rounded-3xl border border-neutral-200 bg-linear-to-br from-[#38b000]/12 via-neutral-50 to-[#38b000]/5">
+  {
+    imagenes.length === 0 ? (
+      <div class="flex h-full w-full items-center justify-center">
+        <span class="text-8xl font-black text-[#38b000]/25 sm:text-9xl">
+          {inicial}
+        </span>
+      </div>
+    ) : (
+      <>
+        <div class="carousel-track flex h-full w-full snap-x snap-mandatory overflow-x-auto scroll-smooth">
+          {imagenes.map((imagen) => (
+            <div class="h-full w-full shrink-0 snap-center">
+              <img
+                src={`${API_URL}${imagen.url}`}
+                alt={imagen.alternativeText ?? alt}
+                class="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+
+        {tieneVarias && (
+          <>
+            <button
+              type="button"
+              aria-label="Imagen anterior"
+              class="carousel-prev absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-white/80 text-neutral-700 shadow-md backdrop-blur-sm transition-all hover:bg-white"
+            >
+              <Icon name="lucide:chevron-left" class="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              aria-label="Imagen siguiente"
+              class="carousel-next absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-white/80 text-neutral-700 shadow-md backdrop-blur-sm transition-all hover:bg-white"
+            >
+              <Icon name="lucide:chevron-right" class="h-5 w-5" />
+            </button>
+
+            <div class="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
+              {imagenes.map((_, i) => (
+                <button
+                  type="button"
+                  aria-label={`Ir a la imagen ${i + 1}`}
+                  data-index={i}
+                  class="carousel-dot h-1.5 w-1.5 rounded-full bg-white/60 shadow-sm transition-all data-[active=true]:w-4 data-[active=true]:bg-white"
+                  data-active={i === 0 ? "true" : "false"}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </>
+    )
+  }
+</div>
+
+<script>
+  const carouseles = document.querySelectorAll<HTMLElement>(".carousel-imagenes");
+
+  carouseles.forEach((carousel) => {
+    const track = carousel.querySelector<HTMLElement>(".carousel-track");
+    const prevBtn = carousel.querySelector<HTMLButtonElement>(".carousel-prev");
+    const nextBtn = carousel.querySelector<HTMLButtonElement>(".carousel-next");
+    const dots = Array.from(
+      carousel.querySelectorAll<HTMLButtonElement>(".carousel-dot"),
+    );
+
+    if (!track) return;
+
+    const irA = (index: number) => {
+      const slide = track.children[index] as HTMLElement | undefined;
+      slide?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    };
+
+    prevBtn?.addEventListener("click", () => {
+      const actual = Math.round(track.scrollLeft / track.clientWidth);
+      irA(Math.max(0, actual - 1));
+    });
+
+    nextBtn?.addEventListener("click", () => {
+      const actual = Math.round(track.scrollLeft / track.clientWidth);
+      irA(Math.min(track.children.length - 1, actual + 1));
+    });
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => irA(i));
+    });
+
+    let ticking = false;
+    track.addEventListener("scroll", () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const actual = Math.round(track.scrollLeft / track.clientWidth);
+        dots.forEach((dot, i) => {
+          dot.dataset.active = i === actual ? "true" : "false";
+        });
+        ticking = false;
+      });
+    });
+  });
+</script>
+
+<style>
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+  .carousel-track {
+    scrollbar-width: none;
+  }
+</style>
