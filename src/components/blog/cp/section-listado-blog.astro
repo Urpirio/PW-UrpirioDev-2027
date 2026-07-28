@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import CardBlog from "../../share-ui/CardBlog.astro";
 import { Fetch, API_URL } from "../../../lib/Fetch-Public-Informacion";
+import { extraerTextoPlano } from "../../../lib/parse-rich-text";
 import type { tp_blogs } from "../types/tp-blog";
 
 const data: tp_blogs = await Fetch({ pathname: "/api/blogs?populate=*" });
@@ -20,7 +21,7 @@ const formatearFecha = (fecha?: string) =>
       )
     : undefined;
 
-const tiempoLectura = (texto?: string) => {
+const tiempoLectura = (texto: string) => {
   if (!texto) return undefined;
   const palabras = texto.trim().split(/\s+/).length;
   return `${Math.max(1, Math.ceil(palabras / 200))} min de lectura`;
@@ -39,13 +40,13 @@ const tiempoLectura = (texto?: string) => {
     <div class="text-center">
       <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#38b000]">
         <Icon name="lucide:newspaper" class="h-3.5 w-3.5" />
-        Blog
+        Artículos
       </span>
       <h1 class="mt-5 text-balance text-4xl font-black tracking-tight text-neutral-900 sm:text-5xl">
         Notas y <span class="text-[#38b000]">aprendizajes</span>
       </h1>
       <p class="mx-auto mt-4 max-w-lg text-base text-neutral-600">
-        Ideas, aprendizajes y notas técnicas sobre desarrollo web, IA y todo lo
+        Artículos, aprendizajes y novedades sobre desarrollo web, IA y todo lo
         que voy descubriendo en el camino.
       </p>
     </div>
@@ -117,19 +118,20 @@ const tiempoLectura = (texto?: string) => {
     <div id="lista-blog" class="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {posts.map((post) => {
         const cats = (post.categoria_blogs ?? []).map((c) => c.nombre);
-        const imagen = post.documentos?.[0];
+        const imagen = post.imagenes?.[0];
+        const textoPlano = extraerTextoPlano(post.articulo);
         return (
           <CardBlog
             class="blog-item"
             titulo={post.titulo}
-            resumen={post.resumen ?? post.contenido}
+            resumen={post.subtitulo ?? textoPlano}
             categoria={cats[0]}
             imagen={imagen ? `${API_URL}${imagen.url}` : undefined}
             fecha={formatearFecha(post.publishedAt)}
-            tiempoLectura={tiempoLectura(post.contenido)}
-            href={`/blog/${post.documentId}`}
+            tiempoLectura={tiempoLectura(textoPlano)}
+            href={`/articulos/${post.documentId}`}
             data-titulo={post.titulo?.toLowerCase()}
-            data-contenido={post.contenido?.toLowerCase()}
+            data-contenido={textoPlano.toLowerCase()}
             data-categorias={cats.join(",").toLowerCase()}
           />
         );
