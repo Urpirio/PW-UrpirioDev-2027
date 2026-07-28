@@ -1,0 +1,62 @@
+---
+import { Icon } from "astro-icon/components";
+import type { object_proyecto_cta } from "../types/tp-proyectos";
+
+interface Props {
+  cta: object_proyecto_cta;
+}
+
+const { cta } = Astro.props;
+---
+
+<section class="relative px-6 py-8 sm:px-10">
+  <div class="cta-proyecto relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-[#38b000]/30 bg-[#38b000]/5 p-8 sm:p-10">
+    <div class="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-[#38b000]/10 blur-3xl"></div>
+
+    <div class="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#38b000]">
+          <Icon name="lucide:sparkles" class="h-3.5 w-3.5" />
+          ¿Te gustó este proyecto?
+        </span>
+        <h2 class="mt-3 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
+          {cta.titulo}
+        </h2>
+        {
+          cta.descripcion && (
+            <p class="mt-2 max-w-md text-neutral-600">{cta.descripcion}</p>
+          )
+        }
+      </div>
+
+      <a
+        href={cta.url}
+        target="_blank"
+        rel="noreferrer"
+        class="group inline-flex shrink-0 items-center gap-2 rounded-full bg-linear-to-r from-[#38b000] to-[#2d8d00] px-7 py-3.5 font-bold text-white shadow-lg shadow-[#38b000]/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#38b000]/30"
+      >
+        {cta.label_url ?? "Saber más"}
+        <Icon
+          name="lucide:arrow-up-right"
+          class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        />
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { animate, inView } from "motion";
+
+  inView(
+    ".cta-proyecto",
+    (element) => {
+      animate(
+        element,
+        { opacity: [0, 1], y: [32, 0] },
+        { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+      );
+    },
+    { amount: 0.3 },
+  );
+</script>
