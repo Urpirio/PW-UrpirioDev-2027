@@ -2,6 +2,7 @@
 import LayoutAstroComponent from "../../layouts/Layout.astro";
 import SectionDetalleBlog from "../../components/blog/cp/section-detalle-blog.astro";
 import SectionRelacionadosBlog from "../../components/blog/cp/section-relacionados-blog.astro";
+import SectionCtaProyecto from "../../components/proyectos/cp-[id]/section-cta-proyecto.astro";
 import CTAAgencia from "../../components/share-ui/CTAAgencia.astro";
 import { Fetch } from "../../lib/Fetch-Public-Informacion";
 import type { tp_blogs, object_blog } from "../../components/blog/types/tp-blog";
@@ -25,5 +26,9 @@ const { post, posts } = Astro.props as {
 <LayoutAstroComponent>
   <SectionDetalleBlog post={post} />
   <SectionRelacionadosBlog posts={posts} actual={post} />
-  <CTAAgencia variant="outline" />
+  {post.cta ? (
+    <SectionCtaProyecto cta={post.cta} />
+  ) : (
+    <CTAAgencia variant="outline" />
+  )}
 </LayoutAstroComponent>
