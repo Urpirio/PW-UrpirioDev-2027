@@ -1,0 +1,51 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<Layout
+  title="Error del servidor — Urpirio Dev"
+  description="Ocurrió un error inesperado. Estamos trabajando para solucionarlo."
+>
+  <section class="relative flex min-h-[70vh] items-center overflow-hidden px-6 py-20 sm:px-10">
+    <!-- Fondos decorativos -->
+    <div class="pointer-events-none absolute inset-0 -z-10">
+      <div class="absolute left-1/2 top-0 h-100 w-100 -translate-x-1/2 rounded-full bg-linear-to-b from-[#38b000]/15 to-transparent blur-3xl"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(56,176,0,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(56,176,0,0.035)_1px,transparent_1px)] bg-size-[56px_56px] mask-[radial-gradient(ellipse_at_center,black,transparent_75%)]"></div>
+    </div>
+
+    <div class="mx-auto max-w-2xl text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#38b000]">
+        <Icon name="lucide:server-crash" class="h-3.5 w-3.5" />
+        Error inesperado
+      </span>
+
+      <h1 class="mt-6 text-balance text-7xl font-black tracking-tight text-neutral-900 sm:text-8xl">
+        5<span class="text-[#38b000]">0</span>0
+      </h1>
+
+      <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg">
+        Algo salió mal de nuestro lado. Ya lo sabemos y estamos en eso;
+        intenta de nuevo en unos minutos.
+      </p>
+
+      <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a
+          href="/"
+          class="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-linear-to-r from-[#38b000] to-[#2d8d00] px-7 py-3.5 font-semibold text-white shadow-lg shadow-[#38b000]/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#38b000]/30 sm:w-auto"
+        >
+          <Icon name="lucide:house" class="h-4 w-4" />
+          Volver al inicio
+        </a>
+        <button
+          type="button"
+          onclick="location.reload()"
+          class="inline-flex w-full items-center justify-center gap-2 rounded-full border border-neutral-300 px-7 py-3.5 font-semibold text-neutral-800 transition-all duration-300 hover:border-[#38b000] hover:text-[#38b000] sm:w-auto"
+        >
+          <Icon name="lucide:refresh-cw" class="h-4 w-4" />
+          Reintentar
+        </button>
+      </div>
+    </div>
+  </section>
+</Layout>
