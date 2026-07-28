@@ -1,10 +1,11 @@
 import type { object_proyecto, tp_documento } from "../types/tp-proyectos";
 
-/**
- * El CMS migró el campo de imagen de "documentos" a "images"; documentos
- * puede seguir viniendo null en proyectos ya migrados. Este helper cubre
- * ambos nombres para no romper mientras conviven datos con uno u otro.
- */
+/** Galería de imágenes del proyecto (portada + adicionales). */
+export const getGaleriaImagenes = (
+  proyecto: Pick<object_proyecto, "images">,
+): tp_documento[] => proyecto.images ?? [];
+
+/** Primera imagen del proyecto, si tiene alguna. */
 export const getImagenProyecto = (
-  proyecto: Pick<object_proyecto, "images" | "documentos">,
-): tp_documento | undefined => proyecto.images?.[0] ?? proyecto.documentos?.[0] ?? undefined;
+  proyecto: Pick<object_proyecto, "images">,
+): tp_documento | undefined => getGaleriaImagenes(proyecto)[0];
