@@ -2,12 +2,14 @@ interface tp_Fetch {
   pathname: string;
 }
 
-// TEMPORAL: apuntando al Strapi local mientras section-hero/section-about-me
-// no estén desplegados en producción. Antes de publicar, revertir a:
-// export const API_URL = "https://pw-urpiriodev-cms-2027-production.up.railway.app";
-export const API_URL = "http://localhost:1337";
+// Ambos definidos en .env (no versionado). Ver .env.example.
+// STRAPI_URL es opcional: si no se define, se usa producción. Para
+// desarrollar contra un Strapi local, pon STRAPI_URL=http://localhost:1337
+// en tu .env — nunca hace falta tocar este archivo para eso.
+export const API_URL =
+  import.meta.env.STRAPI_URL ||
+  "https://pw-urpiriodev-cms-2027-production.up.railway.app";
 
-// Definido en .env (no versionado). Ver .env.example.
 const API_TOKEN = import.meta.env.STRAPI_API_TOKEN;
 
 export const Fetch = async ({ pathname }: tp_Fetch) => {
