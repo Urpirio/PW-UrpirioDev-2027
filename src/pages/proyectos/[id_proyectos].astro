@@ -25,7 +25,10 @@ const { proyecto, proyectos } = Astro.props as {
 };
 ---
 
-<LayoutAstroComponent>
+<LayoutAstroComponent
+  title={`${proyecto.titulo} — Urpirio Dev`}
+  description={proyecto.descripcion}
+>
   <SectionDetalleProyecto proyecto={proyecto} />
   <SectionRelacionados proyectos={proyectos} actual={proyecto} />
   {proyecto.cta ? (
