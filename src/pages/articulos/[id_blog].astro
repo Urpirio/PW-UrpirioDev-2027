@@ -23,7 +23,10 @@ const { post, posts } = Astro.props as {
 };
 ---
 
-<LayoutAstroComponent>
+<LayoutAstroComponent
+  title={`${post.titulo} — Urpirio Dev`}
+  description={post.subtitulo ?? post.titulo}
+>
   <SectionDetalleBlog post={post} />
   <SectionRelacionadosBlog posts={posts} actual={post} />
   {post.cta ? (
