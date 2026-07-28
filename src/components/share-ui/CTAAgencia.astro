@@ -1,5 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Fetch } from "../../lib/Fetch-Public-Informacion";
+import type { tp_cta_agencia } from "./types/tp-cta-agencia";
 
 interface Props {
   /** "solid": banner verde sólido (home, listado). "outline": tarjeta clara con borde (detalle). */
@@ -8,14 +10,24 @@ interface Props {
 
 const { variant = "solid" } = Astro.props;
 
-// TODO: reemplazar con los datos reales de la agencia
+const data: tp_cta_agencia = await Fetch({
+  pathname: "/api/cta-para-agencia",
+});
+const cms = data?.data;
+
 const agencia = {
-  nombre: "Mi Agencia",
-  url: "https://agencia.com",
+  titulo:
+    cms?.titulo ||
+    (variant === "solid"
+      ? "Trabajemos con todo un equipo"
+      : "¿Necesitas un equipo completo?"),
   descripcion:
-    variant === "solid"
+    cms?.descripcion ||
+    (variant === "solid"
       ? "¿Buscas un equipo completo para llevar tu marca al siguiente nivel? En mi agencia diseñamos y construimos experiencias digitales a medida."
-      : "¿Un proyecto más ambicioso? En mi agencia contamos con un equipo completo para llevarlo de la idea a producción.",
+      : "¿Un proyecto más ambicioso? En mi agencia contamos con un equipo completo para llevarlo de la idea a producción."),
+  url: cms?.url_agencia || "https://agencia.com",
+  label: cms?.label_url || "Visitar agencia",
 };
 ---
 
@@ -38,7 +50,7 @@ const agencia = {
             </span>
 
             <h2 class="mt-5 text-balance text-3xl font-black tracking-tight sm:text-4xl">
-              Trabajemos con todo un equipo
+              {agencia.titulo}
             </h2>
 
             <p class="mt-4 max-w-xl leading-relaxed text-white/90">
@@ -53,7 +65,7 @@ const agencia = {
               rel="noreferrer"
               class="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-bold text-[#2d8d00] shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
             >
-              Visitar {agencia.nombre}
+              {agencia.label}
               <Icon
                 name="lucide:arrow-up-right"
                 class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -75,7 +87,7 @@ const agencia = {
               ¿Algo más grande?
             </span>
             <h2 class="mt-3 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
-              ¿Necesitas un equipo completo?
+              {agencia.titulo}
             </h2>
             <p class="mt-2 max-w-md text-neutral-600">{agencia.descripcion}</p>
           </div>
@@ -86,7 +98,7 @@ const agencia = {
             rel="noreferrer"
             class="group inline-flex shrink-0 items-center gap-2 rounded-full bg-linear-to-r from-[#38b000] to-[#2d8d00] px-7 py-3.5 font-bold text-white shadow-lg shadow-[#38b000]/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#38b000]/30"
           >
-            Visitar {agencia.nombre}
+            {agencia.label}
             <Icon
               name="lucide:arrow-up-right"
               class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
