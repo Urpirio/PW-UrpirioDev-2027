@@ -147,3 +147,11 @@ export const parseContenido = (
 
   return resultado;
 };
+
+/** Concatena todo el texto plano de un rich text, sin marcas ni saltos. */
+export const extraerTextoPlano = (bloques?: BloqueStrapi[] | null): string =>
+  (bloques ?? [])
+    .map((bloque) => (bloque.children ?? []).map((c) => c.text ?? "").join(""))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
