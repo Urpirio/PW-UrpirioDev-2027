@@ -2,6 +2,18 @@
 import HeaderGlobal from "../components/share-ui/Header-Global.astro";
 import FooterGlobal from "../components/share-ui/Footer-Global.astro";
 import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Urpirio Dev",
+  description = "Portafolio de Urpirio Moreno Vargas, desarrollador de software dominicano especializado en interfaces web y móviles modernas.",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -12,7 +24,20 @@ import "../styles/global.css";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    <title>Urpirio Dev</title>
+    <link rel="canonical" href={canonicalURL} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="es_DO" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
   </head>
   <body class="bg-white text-neutral-900 antialiased">
     <HeaderGlobal />
