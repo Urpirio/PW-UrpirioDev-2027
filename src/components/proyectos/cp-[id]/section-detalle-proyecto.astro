@@ -2,8 +2,9 @@
 import { Icon } from "astro-icon/components";
 import { API_URL } from "../../../lib/Fetch-Public-Informacion";
 import { parseContenido } from "../../../lib/parse-rich-text";
-import { getImagenProyecto } from "../lib/proyecto-utils";
+import { getGaleriaImagenes } from "../lib/proyecto-utils";
 import RichSegmento from "../../share-ui/RichSegmento.astro";
+import CarouselImagenes from "../../share-ui/CarouselImagenes.astro";
 import type { object_proyecto } from "../types/tp-proyectos";
 
 interface Props {
@@ -13,9 +14,10 @@ interface Props {
 const { proyecto } = Astro.props;
 
 const inicial = (proyecto.titulo ?? "P").trim().charAt(0).toUpperCase();
-const imagen = getImagenProyecto(proyecto);
+const imagenes = getGaleriaImagenes(proyecto);
 const categorias = proyecto.categoria_proyectos ?? [];
 const tecnologias = proyecto.tecnologia_proyectos ?? [];
+const archivos = proyecto.documentos ?? [];
 
 const fechaPublicacion = proyecto.publishedAt
   ? new Intl.DateTimeFormat("es-DO", { dateStyle: "long" }).format(
@@ -23,12 +25,22 @@ const fechaPublicacion = proyecto.publishedAt
     )
   : null;
 
+const ICONO_POR_EXTENSION: Record<string, string> = {
+  ".pdf": "lucide:file-text",
+  ".doc": "lucide:file-text",
+  ".docx": "lucide:file-text",
+  ".xls": "lucide:file-spreadsheet",
+  ".xlsx": "lucide:file-spreadsheet",
+  ".zip": "lucide:file-archive",
+  ".rar": "lucide:file-archive",
+};
+
+const formatearTamano = (kb: number) => {
+  if (kb < 1024) return `${Math.round(kb)} KB`;
+  return `${(kb / 1024).toFixed(1)} MB`;
+};
+
 const ficha = [
-  categorias[0] && {
-    icon: "lucide:tag",
-    etiqueta: "Categoría",
-    valor: categorias[0].nombre,
-  },
   fechaPublicacion && {
     icon: "lucide:calendar",
     etiqueta: "Publicado",
@@ -65,12 +77,6 @@ const bloques = parseContenido(proyecto.contenido);
 
     <!-- Encabezado -->
     <header class="mt-8">
-      {categorias[0] && (
-        <span class="inline-flex items-center gap-2 rounded-full border border-[#38b000]/20 bg-[#38b000]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#38b000]">
-          <Icon name="lucide:tag" class="h-3.5 w-3.5" />
-          {categorias[0].nombre}
-        </span>
-      )}
 
       <h1 class="mt-5 text-balance text-4xl font-black tracking-tight text-neutral-900 sm:text-5xl">
         {proyecto.titulo}
@@ -91,19 +97,8 @@ const bloques = parseContenido(proyecto.contenido);
     </header>
 
     <!-- Portada -->
-    <div class="mt-10 flex aspect-video w-full items-center justify-center overflow-hidden rounded-3xl border border-neutral-200 bg-linear-to-br from-[#38b000]/12 via-neutral-50 to-[#38b000]/5">
-      {imagen ? (
-        <img
-          src={`${API_URL}${imagen.url}`}
-          alt={imagen.alternativeText ?? proyecto.titulo}
-          class="h-full w-full object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <span class="text-8xl font-black text-[#38b000]/25 sm:text-9xl">
-          {inicial}
-        </span>
-      )}
+    <div class="mt-10">
+      <CarouselImagenes imagenes={imagenes} alt={proyecto.titulo} inicial={inicial} />
     </div>
 
     <!-- Contenido -->
@@ -167,30 +162,91 @@ const bloques = parseContenido(proyecto.contenido);
       </div>
 
       <!-- Ficha técnica -->
-      {ficha.length > 0 && (
-        <aside class="lg:sticky lg:top-28 lg:self-start">
-          <div class="rounded-3xl border border-neutral-200 bg-neutral-50/60 p-6">
-            <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">
-              Ficha del proyecto
-            </p>
-            <dl class="mt-5 space-y-5">
-              {ficha.map((item) => (
-                <div class="flex items-start gap-3">
-                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#38b000] shadow-sm">
-                    <Icon name={item.icon} class="h-4 w-4" />
+      {(ficha.length > 0 || categorias.length > 0 || archivos.length > 0) && (
+        <aside class="lg:sticky lg:top-28 lg:self-start space-y-5">
+          {(ficha.length > 0 || categorias.length > 0) && (
+            <div class="rounded-3xl border border-neutral-200 bg-neutral-50/60 p-6">
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                Ficha del proyecto
+              </p>
+              <dl class="mt-5 space-y-5">
+                {categorias.length > 0 && (
+                  <div class="flex items-start gap-3">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#38b000] shadow-sm">
+                      <Icon name="lucide:tag" class="h-4 w-4" />
+                    </div>
+                    <div>
+                      <dt class="text-xs font-medium uppercase tracking-wide text-neutral-400">
+                        {categorias.length > 1 ? "Categorías" : "Categoría"}
+                      </dt>
+                      <dd class="mt-1 flex flex-wrap gap-1.5">
+                        {categorias.map((cat) => (
+                          <span class="rounded-full bg-[#38b000]/10 px-2.5 py-1 text-xs font-semibold text-[#2d8d00]">
+                            {cat.nombre}
+                          </span>
+                        ))}
+                      </dd>
+                    </div>
                   </div>
-                  <div>
-                    <dt class="text-xs font-medium uppercase tracking-wide text-neutral-400">
-                      {item.etiqueta}
-                    </dt>
-                    <dd class="text-sm font-semibold text-neutral-900">
-                      {item.valor}
-                    </dd>
+                )}
+                {ficha.map((item) => (
+                  <div class="flex items-start gap-3">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#38b000] shadow-sm">
+                      <Icon name={item.icon} class="h-4 w-4" />
+                    </div>
+                    <div>
+                      <dt class="text-xs font-medium uppercase tracking-wide text-neutral-400">
+                        {item.etiqueta}
+                      </dt>
+                      <dd class="text-sm font-semibold text-neutral-900">
+                        {item.valor}
+                      </dd>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </dl>
-          </div>
+                ))}
+              </dl>
+            </div>
+          )}
+
+          {archivos.length > 0 && (
+            <div class="rounded-3xl border border-neutral-200 bg-neutral-50/60 p-6">
+              <p class="text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                Documentos
+              </p>
+              <ul class="mt-5 space-y-2.5">
+                {archivos.map((archivo) => (
+                  <li>
+                    <a
+                      href={`${API_URL}${archivo.url}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      download
+                      class="group flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 transition-all duration-300 hover:border-[#38b000]/40 hover:shadow-sm"
+                    >
+                      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#38b000]/10 text-[#38b000]">
+                        <Icon
+                          name={ICONO_POR_EXTENSION[archivo.ext?.toLowerCase()] ?? "lucide:file"}
+                          class="h-4 w-4"
+                        />
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <p class="truncate text-xs font-semibold text-neutral-900">
+                          {archivo.name}
+                        </p>
+                        <p class="text-xs text-neutral-400">
+                          {formatearTamano(archivo.size)}
+                        </p>
+                      </div>
+                      <Icon
+                        name="lucide:download"
+                        class="h-4 w-4 shrink-0 text-neutral-400 transition-colors group-hover:text-[#38b000]"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </aside>
       )}
     </div>
