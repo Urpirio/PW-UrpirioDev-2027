@@ -5,22 +5,21 @@ import SectionRelacionadosBlog from "../../components/blog/cp/section-relacionad
 import SectionCtaProyecto from "../../components/proyectos/cp-[id]/section-cta-proyecto.astro";
 import CTAAgencia from "../../components/share-ui/CTAAgencia.astro";
 import { Fetch } from "../../lib/Fetch-Public-Informacion";
-import type { tp_blogs, object_blog } from "../../components/blog/types/tp-blog";
+import type { tp_blogs, tp_blog_single } from "../../components/blog/types/tp-blog";
 
-export async function getStaticPaths() {
-  const data: tp_blogs = await Fetch({ pathname: "/api/blogs?populate=*" });
-  const posts = data?.data ?? [];
+const { id_blog } = Astro.params;
 
-  return posts.map((post) => ({
-    params: { id_blog: post.documentId },
-    props: { post, posts },
-  }));
+const [singleData, listData]: [tp_blog_single, tp_blogs] = await Promise.all([
+  Fetch({ pathname: `/api/blogs/${id_blog}?populate=*` }),
+  Fetch({ pathname: "/api/blogs?populate=*" }),
+]);
+
+const post = singleData?.data;
+const posts = listData?.data ?? [];
+
+if (!post) {
+  return Astro.redirect("/404");
 }
-
-const { post, posts } = Astro.props as {
-  post: object_blog;
-  posts: object_blog[];
-};
 ---
 
 <LayoutAstroComponent
