@@ -5,24 +5,21 @@ import SectionCtaProyecto from "../../components/proyectos/cp-[id]/section-cta-p
 import SectionRelacionados from "../../components/proyectos/cp/section-relacionados.astro";
 import CTAAgencia from "../../components/share-ui/CTAAgencia.astro";
 import { Fetch } from "../../lib/Fetch-Public-Informacion";
-import type { tp_proyectos, object_proyecto } from "../../components/proyectos/types/tp-proyectos";
+import type { tp_proyectos, tp_proyecto_single } from "../../components/proyectos/types/tp-proyectos";
 
-export async function getStaticPaths() {
-  const data: tp_proyectos = await Fetch({
-    pathname: "/api/proyectos?populate=*",
-  });
-  const proyectos = data?.data ?? [];
+const { id_proyectos } = Astro.params;
 
-  return proyectos.map((proyecto) => ({
-    params: { id_proyectos: proyecto.documentId },
-    props: { proyecto, proyectos },
-  }));
+const [singleData, listData]: [tp_proyecto_single, tp_proyectos] = await Promise.all([
+  Fetch({ pathname: `/api/proyectos/${id_proyectos}?populate=*` }),
+  Fetch({ pathname: "/api/proyectos?populate=*" }),
+]);
+
+const proyecto = singleData?.data;
+const proyectos = listData?.data ?? [];
+
+if (!proyecto) {
+  return Astro.redirect("/404");
 }
-
-const { proyecto, proyectos } = Astro.props as {
-  proyecto: object_proyecto;
-  proyectos: object_proyecto[];
-};
 ---
 
 <LayoutAstroComponent
